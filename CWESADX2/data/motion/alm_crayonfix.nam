@@ -1,0 +1,24 @@
+#pragma once
+	NJS_MKEY_SA stru_381B7A0[20] =
+	{
+	  { 0, NJM_DEG_ANG(180),0,0 },
+	  { 1, NJM_DEG_ANG(180),0,0  },
+	  { 2, NJM_DEG_ANG(180),0,0  },
+	  { 3, NJM_DEG_ANG(180),0,0  },
+	  { 4, NJM_DEG_ANG(180),0,0  },
+	  { 5, NJM_DEG_ANG(180),0,0  },
+	  { 6, NJM_DEG_ANG(180),0,0  },
+	  { 7, NJM_DEG_ANG(180),0,0  },
+	  { 8, NJM_DEG_ANG(180),0,0  },
+	  { 9, NJM_DEG_ANG(180),0,0  },
+	  { 10, NJM_DEG_ANG(180),0,0  },
+	  { 11, NJM_DEG_ANG(180),0,0  },
+	  { 12, NJM_DEG_ANG(180),0,0  },
+	  { 13, NJM_DEG_ANG(180),0,0  },
+	  { 14, NJM_DEG_ANG(180),0,0  },
+	  { 15, NJM_DEG_ANG(180),0,0  },
+	  { 16, NJM_DEG_ANG(180),0,0  },
+	  { 17, NJM_DEG_ANG(180),0,0  },
+	  { 18, NJM_DEG_ANG(180),0,0  },
+	  { 19, NJM_DEG_ANG(180),0,0  }
+	};
