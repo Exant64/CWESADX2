@@ -837,7 +837,7 @@ bool __cdecl ALBHV_Eda(ObjectMaster* a1)
 	}
 	return 0;
 }
-
+signed int sub_564760(ObjectMaster* a1);
 void Chao_Init()
 {
 	//attempt at patching something
@@ -860,7 +860,8 @@ void Chao_Init()
 
 	//float toy
 	//WriteCall((void*)0x0073C13F, ALBHV_FloatCheck);
-	WriteCall((void*)0x0071EE6D, sub_563B70);
+	WriteCall((void*)0x0071EE6D, sub_563B70); //ball
+	WriteCall((void*)0x0071EEA3, sub_564760); //box
 	//piano
 	//WriteData((int*)0x0075F2E1, (int)ALBHV_GoToPiano);
 	//WriteData((int*)0x0075F2E8, (int)& Chao_BallJoinDecision);

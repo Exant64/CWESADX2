@@ -198,11 +198,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="albhv\albhv_ball.cpp" />
+    <ClCompile Include="albhv\albhv_box.cpp" />
     <ClCompile Include="al_kinder_bm.cpp" />
     <ClCompile Include="al_knowledge.cpp" />
     <ClCompile Include="al_sound.cpp" />
     <ClCompile Include="al_toy\alo_ball.cpp" />
     <ClCompile Include="al_toy\alo_boat.cpp" />
+    <ClCompile Include="al_toy\alo_box.cpp" />
     <ClCompile Include="al_toy\alo_console.cpp" />
     <ClCompile Include="al_toy\alo_float.cpp" />
     <ClCompile Include="al_toy\alo_horse.cpp" />
@@ -227,6 +229,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="data\motion\alm_crayonfix.nam" />
+    <None Include="data\toy\alm_box.njm" />
+    <None Include="data\toy\object_al_toy_box.nja" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

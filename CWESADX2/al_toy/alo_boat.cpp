@@ -35,8 +35,7 @@ void ALO_Boat_Displayer(ObjectMaster *a1)
 	DisableChunkMaterialFlags();
 	njControl3D_Restore();
 }
-FunctionPointer(void, CCL_Enable, (EntityData1* a1, int a2), 0x41C1F0);
-FunctionPointer(void, CCL_Disable, (EntityData1* a1, int a2), 0x041C220);
+
 void ALO_Boat_Main(ObjectMaster *a1)
 {
 	if (ALW_RecieveCommand(a1) == ALW_CMD_CHANGE) 

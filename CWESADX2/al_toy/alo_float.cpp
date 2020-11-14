@@ -49,8 +49,7 @@ void ALO_Float_Displayer(ObjectMaster* a1)
 	float a3 = -1.0 - CalcCamDist(a1) * 0.000099999997;
 	DrawModelCallback_Queue((void(__cdecl*)(void*))ALO_Float_Displayer_, a1, a3, QueuedModelFlagsB_EnableZWrite);
 }
-FunctionPointer(void, CCL_Enable, (EntityData1* a1, int a2), 0x41C1F0);
-FunctionPointer(void, CCL_Disable, (EntityData1* a1, int a2), 0x041C220);
+
 void ALO_Float_Main(ObjectMaster* a1)
 {
 	//if (ALW_RecieveCommand(a1) == ALW_CMD_CHANGE)

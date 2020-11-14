@@ -197,8 +197,16 @@
     <ClCompile Include="albhv\albhv_ball.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="al_toy\alo_box.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="albhv\albhv_box.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="data\motion\alm_crayonfix.nam" />
+    <None Include="data\toy\alm_box.njm" />
+    <None Include="data\toy\object_al_toy_box.nja" />
   </ItemGroup>
 </Project>

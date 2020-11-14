@@ -137,6 +137,7 @@ LABEL_14:
 	}
 	return 0;
 }
+FunctionPointer(signed int, AL_CheckWhistle,(ObjectMaster* a1),0x0073B770);
 signed int sub_563B70(ObjectMaster* a1)
 {
 	chaowk* v1; // eax
@@ -145,14 +146,14 @@ signed int sub_563B70(ObjectMaster* a1)
 
 	if (!BallUsable)
 	{
-		return 0;
+		return AL_CheckWhistle(a1);
 	}
 	v1 = (chaowk*)a1->Data1;
 	v2 = v1->pParamGC;
 	if (AL_EmotionGetValue(a1, EM_ST_TEDIOUS) <= 4000u
 		|| CheckDistance(&v1->entity.Position, &ALO_BallPtr->Data1->Position) >= 50.0)
 	{
-		return 0;
+		return AL_CheckWhistle(a1);
 	}
 	AL_EmotionAdd(a1, EM_ST_TEDIOUS, -2000);
 	AL_SetBehavior(a1, sub_563830);

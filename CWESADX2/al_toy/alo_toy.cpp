@@ -8,7 +8,7 @@
 //#include "../SeedGameObject.h"
 
 extern ObjectMaster* PlaceConsole(NJS_VECTOR* pos);
-extern void ALO_Boat_Create(NJS_VECTOR* a1, int rotY);
+extern void ALO_BoxExecutor_Load(NJS_VECTOR* a1);
 
 void LoadSSGardenNew()
 {
@@ -19,7 +19,8 @@ void LoadSSGardenNew()
 //	PlaceConsole(&pos);
 	//ALO_Boat_Create(&pos, 0);
 	NJS_VECTOR a3 = { 0,0,0 };
-	CreateBall(&a3, &a3);
+	//CreateBall(&a3, &a3);
+	ALO_BoxExecutor_Load(&pos);
 	if (ChaoSaveFileTest[5])
 		PlaceTV();
 }

@@ -63,10 +63,7 @@ double sub_77FC90(NJS_VECTOR* a1, NJS_VECTOR* a2 , NJS_VECTOR* a3)
 }
 int dword_1DBE56C;
 int BallUsable;
-FunctionPointer(void, CCL_Enable, (EntityData1* a1, int a2), 0x0041C1F0);
-FunctionPointer(void, MOV_Control, (ObjectMaster* a1), 0x0073FEF0);
-FunctionPointer(void, MOV_DetectCollision, (ObjectMaster* a1), 0x0741290);
-FunctionPointer(void, CCL_Disable, (EntityData1* a1, int a2), 0x41C220);
+
 void sub_55CC40(ObjectMaster* a1)
 {
 	EntityData1* data1 = a1->Data1;

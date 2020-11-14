@@ -268,6 +268,10 @@ struct __declspec(align(4)) CHAO_GLOBAL
 	float RaceTurboRatioOther;
 };
 #pragma pack(pop)
+FunctionPointer(void, CCL_Enable, (EntityData1* a1, int a2), 0x0041C1F0);
+FunctionPointer(void, MOV_Control, (ObjectMaster* a1), 0x0073FEF0);
+FunctionPointer(void, MOV_DetectCollision, (ObjectMaster* a1), 0x0741290);
+FunctionPointer(void, CCL_Disable, (EntityData1* a1, int a2), 0x41C220);
 FunctionPointer(ObjectMaster*, ALOField_Load, (ObjectMaster* a1, char a2, NJS_VECTOR* a3, float a4, int random), 0x00764A60);
 FunctionPointer(ObjectMaster*, ALOField_Find, (ObjectMaster* a1, int a2, char a3), 0x0723FF0);
 FunctionPointer(ObjectMaster*, ALOField_Find2, (EntityData1* a1, int a2), 0x0041C930);
@@ -586,6 +590,7 @@ FunctionPointer(signed int, AL_MoveHoldingObject, (ObjectMaster* a1), 0x744600);
 FunctionPointer(signed int, AL_EmotionAdd, (ObjectMaster* a1, EMOTION_ENUM a2, int a3), 0x00720030);
 FunctionPointer(signed int, AL_EmotionGetValue, (ObjectMaster* a1, EMOTION_ENUM a2), 0x00720160);
 FunctionPointer(void, AL_SetBehavior, (ObjectMaster* a1, signed int(__cdecl* a2)(ObjectMaster*)), 0x0071EF10);
+FunctionPointer(void, AL_SetBehaviorWithTimer, (ObjectMaster* a1, signed int(__cdecl* a2)(ObjectMaster*), int a3), 0x071EC80);
 FunctionPointer(void, AL_SetNextBehavior, (ObjectMaster* a1, signed int(__cdecl* a2)(ObjectMaster*)), 0x0071EF30);
 FunctionPointer(void, AL_SetMotionLink, (ObjectMaster* a1, int a2), 0x00734F00);
 FunctionPointer(void, AL_SetMotionSpd, (ObjectMaster* a1, float a2), 0x0734F80);
