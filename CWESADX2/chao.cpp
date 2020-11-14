@@ -259,6 +259,7 @@ void AL_CalcIntention_Illness(ObjectMaster* a1, float* a2)
 }
 void __cdecl AL_CalcIntentionScore_Chat(ObjectMaster* a1, float* a2);
 void AL_CalcIntentionScore_Tree(ObjectMaster* a1, float* a2);
+signed int sub_563B70(ObjectMaster* a1);
 void ThinkControllerHook(ObjectMaster* a1, float* a2)
 {
 	chaowk* data1 = (chaowk*)a1->Data1;
@@ -270,7 +271,7 @@ void ThinkControllerHook(ObjectMaster* a1, float* a2)
 		AL_SetBehavior(a1, FartReaction);
 		*a2 = 1;
 	}
-
+	if(sub_563B70(a1)) *a2 = 1;
 	AL_CalcIntention_Illness(a1, a2);
 	AL_CalcIntentionScore_Fear(a1, a2);
 	AL_CalcIntentionScore_Tree(a1, a2);
@@ -859,7 +860,7 @@ void Chao_Init()
 
 	//float toy
 	//WriteCall((void*)0x0073C13F, ALBHV_FloatCheck);
-
+	WriteCall((void*)0x0071EE6D, sub_563B70);
 	//piano
 	//WriteData((int*)0x0075F2E1, (int)ALBHV_GoToPiano);
 	//WriteData((int*)0x0075F2E8, (int)& Chao_BallJoinDecision);

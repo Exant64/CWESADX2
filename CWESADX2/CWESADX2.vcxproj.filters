@@ -129,9 +129,6 @@
     <ClInclude Include="eff\eff_tears.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="chao.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -195,6 +192,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="mod.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="albhv\albhv_ball.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

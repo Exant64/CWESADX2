@@ -17,7 +17,9 @@ void LoadSSGardenNew()
 	NJS_VECTOR pos = { -52.5f ,0,-120.5f };
 	LoadSSGarden();
 //	PlaceConsole(&pos);
-	ALO_Boat_Create(&pos, 0);
+	//ALO_Boat_Create(&pos, 0);
+	NJS_VECTOR a3 = { 0,0,0 };
+	CreateBall(&a3, &a3);
 	if (ChaoSaveFileTest[5])
 		PlaceTV();
 }
