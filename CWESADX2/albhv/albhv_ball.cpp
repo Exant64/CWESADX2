@@ -100,7 +100,7 @@ signed int __cdecl sub_563830(ObjectMaster* a1)
 		v11 = v9;
 		Waypoint->y = v8;
 		Waypoint->z = v11;
-		if ((a1->Data1->Status & 0x1000))
+		if ((ALO_BallPtr->Data1->Status & 0x1000))
 		{
 			goto LABEL_19;
 		}

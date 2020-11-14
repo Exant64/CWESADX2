@@ -258,9 +258,9 @@ void sub_55D150(ObjectMaster* a1)
 	data1->Rotation.y = move->AimAng.y - Current_CharObj1->Rotation.y;
 	if(!(data1->Status & 0x1000))
 	{ 
-		move->Velo.x = move->Velo.x * 0.4000000059604645;
-		move->Velo.y = move->Velo.y * 0.699999988079071;
-		move->Velo.z = 0.4000000059604645 * move->Velo.z;
+		move->Velo.x = move->Velo.x * 0.4f;
+		move->Velo.y = move->Velo.y * 0.7f;
+		move->Velo.z = move->Velo.z * 0.4f;
 		move->Acc.x = 0;
 		move->Acc.y = 0;
 		move->Acc.z = 0;
@@ -311,7 +311,7 @@ void Ball_Main(ObjectMaster* a1)
 	EntityData1* v2; // edi
 	int v4; // ecx
 
-
+	PrintDebug("%f %f \n", a1->Data1->Position.x, a1->Data1->Position.z);
 	EntityData1* data1 = a1->Data1;
 	MOVE_WORK* move = (MOVE_WORK*)a1->Data2;
 	BALL_WORK* ball = (BALL_WORK*)a1->UnknownB_ptr;
@@ -362,7 +362,7 @@ void Ball_Display(ObjectMaster* a1)
 void Ball_Load(ObjectMaster* a1)
 {
 	ObjectFunc(ALO_Delete, 0x71A6B0);
-	AddToGlobalChaoThingMaybe(6, a1, 5, 0);
+	AddToGlobalChaoThingMaybe(6, a1, 4, 0);
 	a1->DeleteSub = ALO_Delete;
 	a1->MainSub = Ball_Main;
 	a1->DisplaySub = Ball_Display;
@@ -372,7 +372,7 @@ void Ball_Load(ObjectMaster* a1)
 //CollisionData ballCollision = { 0, 0xC77, 0, 0,{ 0,1.2,0},{2,0,0},  0,0 };
 CollisionData ALO_Ball_collision[3] =
 {
- {'\0','\x01','p','\0',9216u,{0.0,1.5,0.0},15.0,3.0,0.0,0.0,0,0,0},
+ {'\0','\x01','p','\0',9216u,{0.0,1.5,0.0},5,3.0,0.0,0.0,0,0,0},
  {'\0','\0','\x06','\f',0u,{0.0,0.0,0.0},2.0,0,0,0.0,0,0,0},
  {'\xA0','\x01','p','\f',0u,{0.0,-2.0,0.0},4.2,6.0,1.0,0.0,0,0,0}
 };
@@ -401,10 +401,10 @@ void CreateBall(NJS_VECTOR* pos, NJS_VECTOR* vel)
 	move->Gravity = -0.05f;
 	move->Top = 1.5f;
 	move->Bottom = -2.5f;
-	move->BoundFloor = 0.85f;
+	//move->BoundFloor = 0.85f;
 	move->Offset.y = 1.0f;
 	move->BoundFriction = 0.99f;
-	move->work.l = 3328;
+	move->work.l = 0;
 	move->PrePos = data1->Position;
 	dword_1DBE56C = 0;
 	
