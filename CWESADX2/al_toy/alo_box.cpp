@@ -17,39 +17,33 @@ void __cdecl ALO_BoxExecutor_Main(ObjectMaster* a1)
 	Float a1b; // [esp+24h] [ebp+4h]
 	float a1c; // [esp+24h] [ebp+4h]
 	Float a1d; // [esp+24h] [ebp+4h]
-
+	
 	v1 = 0.0;
 	v2 = a1;
 	v3 = a1->Data1;
 	switch (v3->Action)
 	{
 	case 0:
-		v4 = ALOField_Find2(a1->Data1 , 0xAF);
-		
+		v4 = ALOField_Find2(a1->Data1, 0xAF);
 		if (v4)
 		{
-			//v5 = *((_DWORD*)v4 + 1);
-			//if (v5)
+			if (v4->Parent)
 			{
-				if (v4->Parent)
+				if ((double)rand() * 0.000030517578125 < 0.5)
 				{
-				//	if ((double)rand() * 0.000030517578125 < 0.5)
-					{
-						v3->Scale.y = 0.0099999998;
-						v3->Scale.z = 0.0;
-						v3->Scale.x = 0.0;
-					}
-					CCL_Disable(a1->Data1, 1);
-					v3->Action = 1;
-					v3->NextAction = 0;
-					v3->InvulnerableTime = 0;
-					v3->Index = 0;
-					v3->InvulnerableTime = 30 - (signed int)((double)rand() * 0.000030517578125 * -121.0);
-					v1 = 0.0;
+					v3->Scale.y = 0.0099999998;
+					v3->Scale.z = 0.0;
+					v3->Scale.x = 0.0;
 				}
+				CCL_Disable(a1->Data1, 1);
+				v3->Action = 1;
+				v3->NextAction = 0;
+				v3->InvulnerableTime = 0;
+				v3->Index = 0;
+				v3->InvulnerableTime = 30 - (signed int)((double)rand() * 0.000030517578125 * -121.0);
+				v1 = 0.0;
 			}
 		}
-		
 		break;
 	case 1:
 		if (!--v3->InvulnerableTime)
@@ -178,7 +172,7 @@ void __cdecl sub_720A70(NJS_CNK_OBJECT* a1, NJS_MOTION* a2, float a3)
 	sub_7801F0();
 	_after_cnk();
 }
-void ALO_BoxExecutor_Display(ObjectMaster *a1)
+void ALO_BoxExecutor_Display(ObjectMaster* a1)
 {
 	if (ScaleObjectMaster_XYZ(a1, 2.5, 2.5, 1.0))
 	{
@@ -229,10 +223,28 @@ void ALO_BoxExecutor_Display(ObjectMaster *a1)
 		njPopMatrixEx();
 	}
 }
+void __cdecl Box_Delete(ObjectMaster* a1)
+{
+	ChaoData1* v1; // eax
+
+	ALW_CancelEntry(a1);
+
+	if (a1->Data2)
+	{
+		HeapFreeSADX(a1->Data2);
+		a1->Data2 = 0;
+	}
+	if (a1->UnknownB_ptr)
+	{
+		HeapFreeSADX(a1->UnknownB_ptr);
+		a1->UnknownB_ptr = 0;
+	}
+}
 CollisionData boxCollision = { '\0', '\0', 'w', '\f', 32768u, { 0.0, 1.6, 0.0 }, 1.6, 0.0, 0.0, 0.0, 0, 0, 0 };
-void ALO_BoxExecutor_Load_(ObjectMaster *a1)
+void ALO_BoxExecutor_Load_(ObjectMaster* a1)
 {
 	a1->MainSub = ALO_BoxExecutor_Main;
+	a1->DeleteSub = ALW_CancelEntry;
 	AddToGlobalChaoThingMaybe(6, a1, 8, 0);
 }
 void ALO_BoxExecutor_Load(NJS_VECTOR* pos)
@@ -240,7 +252,7 @@ void ALO_BoxExecutor_Load(NJS_VECTOR* pos)
 	ObjectMaster* box = LoadObject(LoadObj_Data1, 4, ALO_BoxExecutor_Load_);
 	box->DisplaySub = ALO_BoxExecutor_Display;
 	Collision_Init(box, &boxCollision, 1, 4);
-	
+
 	box->Data1->Position = *pos;
 	box->Data1->Scale.x = 0;
 	box->Data1->Scale.y = 0;

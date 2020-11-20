@@ -2,6 +2,39 @@
 #include "SADXModLoader.h"
 #include "motiontable.h"
 #include <random>
+enum eAL_LTOY
+{
+	AL_LTOY_TV = 0x0,
+	AL_LTOY_RADICASE = 0x1,
+	AL_LTOY_BOX = 0x2,
+	AL_LTOY_BALL_N = 0x3,
+	AL_LTOY_BALL_H = 0x4,
+	AL_LTOY_BALL_D = 0x5,
+	AL_LTOY_HORSE = 0x6,
+	AL_LTOY_UKIWA = 0x7,
+	AL_LTOY_DUCK = 0x8,
+	AL_LTOY_KANOKE = 0x9,
+	AL_LTOY_PIANO = 0xA,
+	AL_LTOY_ORGAN = 0xB,
+	NB_AL_LTOY = 0xC,
+};
+enum eAL_STOY
+{
+	AL_STOY_GARAGARA = 0x0,
+	AL_STOY_CAR = 0x1,
+	AL_STOY_BOOK = 0x2,
+	AL_STOY_CRACKER = 0x3,
+	AL_STOY_DOLL = 0x4,
+	AL_STOY_HOUKI = 0x5,
+	AL_STOY_FIREWORK = 0x6,
+	AL_STOY_HOPPING = 0x7,
+	AL_STOY_CRAYON = 0x8,
+	AL_STOY_SYABON = 0x9,
+	AL_STOY_SCOP = 0xA,
+	AL_STOY_JYOURO = 0xB,
+	NB_AL_STOY = 0xC,
+};
+
 struct ChaoSetmedalThing
 {
 	char gap0[5500];
@@ -276,6 +309,9 @@ FunctionPointer(ObjectMaster*, ALOField_Load, (ObjectMaster* a1, char a2, NJS_VE
 FunctionPointer(ObjectMaster*, ALOField_Find, (ObjectMaster* a1, int a2, char a3), 0x0723FF0);
 FunctionPointer(ObjectMaster*, ALOField_Find2, (EntityData1* a1, int a2), 0x0041C930);
 FunctionPointer(ObjectMaster*, j_ALOField_Load2, (char a1, NJS_VECTOR* a2, float a3, int a4), 0x00764AF0);
+FunctionPointer(void, HeapFreeSADX, (LPVOID lpMem), 0x00780FB0);
+FunctionPointer(void, ALW_CancelEntry, (ObjectMaster *a1), 0x0071A6B0);
+FunctionPointer(void*, HeapAllocSADX, (int count, int size), 0x00780F90);
 struct ChaoSetmedalThing2
 {
 	char gap0[2256];

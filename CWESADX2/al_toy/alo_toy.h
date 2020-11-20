@@ -1,8 +1,7 @@
 #pragma once
 #include "../SADXModLoader.h"
 
-DataArray(char, ChaoSaveFileTest, 0x3C88060, 0x94);
-
+DataPointer(int, ToysUnlocked, 0x3C8806C);
 void LoadSSGardenNew();
 void LoadMRGardenNew();
 void LoadECGardenNew();

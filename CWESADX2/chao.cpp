@@ -32,7 +32,7 @@ void SwimControl(ObjectMaster* a1)
 	}
 }
 void CryingParticle_Load(NJS_VECTOR* vel, NJS_VECTOR* pos, float scale);
-signed int __cdecl Tantrum(ObjectMaster* a1)
+signed int __cdecl ALBHV_HungryDada_(ObjectMaster* a1)
 {
 	ObjectMaster* v1; // edi
 	chaowk* v2; // esi
@@ -264,17 +264,17 @@ void ThinkControllerHook(ObjectMaster* a1, float* a2)
 {
 	chaowk* data1 = (chaowk*)a1->Data1;
 	ChaoData2* data2 = (ChaoData2*)a1->Data2;
-
+	//PrintDebug("%f %f %f \n", Current_CharObj1->Position.x, Current_CharObj1->Position.y, Current_CharObj1->Position.z);
 	//fart reaction restoration
 	if (ALOField_Find(a1, 1, 151))
 	{
 		AL_SetBehavior(a1, FartReaction);
 		*a2 = 1;
 	}
-	if(sub_563B70(a1)) *a2 = 1;
-	AL_CalcIntention_Illness(a1, a2);
+	//if(sub_563B70(a1)) *a2 = 1;
+	//AL_CalcIntention_Illness(a1, a2);
 	AL_CalcIntentionScore_Fear(a1, a2);
-	AL_CalcIntentionScore_Tree(a1, a2);
+	//AL_CalcIntentionScore_Tree(a1, a2);
 
 }
 
@@ -849,8 +849,9 @@ void Chao_Init()
 	WriteJump((void*)0x0073C3A0, Chao_Evolve2);
 
 	//sound restoration, todo restore particles
-	WriteJump(ALBHV_HungryDada, Tantrum);
+	WriteJump(ALBHV_HungryDada, ALBHV_HungryDada_);
 	WriteJump(ALBHV_Cry, ALBHV_Cry_);
+		
 	//console restoration 
 	//WriteJump(ALBHV_GoToTV, ALBHV_GoToBoat);
 
@@ -860,8 +861,10 @@ void Chao_Init()
 
 	//float toy
 	//WriteCall((void*)0x0073C13F, ALBHV_FloatCheck);
+
 	WriteCall((void*)0x0071EE6D, sub_563B70); //ball
 	WriteCall((void*)0x0071EEA3, sub_564760); //box
+
 	//piano
 	//WriteData((int*)0x0075F2E1, (int)ALBHV_GoToPiano);
 	//WriteData((int*)0x0075F2E8, (int)& Chao_BallJoinDecision);
@@ -875,7 +878,7 @@ void Chao_Init()
 	WriteCall((void*)0x00731A8F, AL_CalcParameter_Condition);
 
 	//think controller custom
-	//WriteCall((void*)0x0073D4B1, ThinkControllerHook);
+	WriteCall((void*)0x0073D4B1, ThinkControllerHook);
 
 	//unused rattles
 	WriteCall((void*)0x00763345, HeroDarkRattle);

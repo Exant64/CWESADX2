@@ -199,6 +199,7 @@
   <ItemGroup>
     <ClCompile Include="albhv\albhv_ball.cpp" />
     <ClCompile Include="albhv\albhv_box.cpp" />
+    <ClCompile Include="alo_growtree.cpp" />
     <ClCompile Include="al_kinder_bm.cpp" />
     <ClCompile Include="al_knowledge.cpp" />
     <ClCompile Include="al_sound.cpp" />

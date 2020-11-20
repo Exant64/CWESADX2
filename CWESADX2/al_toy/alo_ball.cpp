@@ -308,7 +308,7 @@ void Ball_Main(ObjectMaster* a1)
 	EntityData1* v2; // edi
 	int v4; // ecx
 
-	PrintDebug("%f %f \n", a1->Data1->Position.x, a1->Data1->Position.z);
+	
 	EntityData1* data1 = a1->Data1;
 	MOVE_WORK* move = (MOVE_WORK*)a1->Data2;
 	BALL_WORK* ball = (BALL_WORK*)a1->UnknownB_ptr;
@@ -350,17 +350,38 @@ void Ball_Display(ObjectMaster* a1)
 
 		njTranslate(0, a1->Data1->Position.x, a1->Data1->Position.y + 1, a1->Data1->Position.z);
 		njMultiMatrix(0, ball->mat);
-		njCnkDrawObject((NJS_CNK_OBJECT*)0x36AE5D4);
-		
+		if(CurrentChaoStage == 4)
+			njCnkDrawObject((NJS_CNK_OBJECT*)0x036ADE9C);
+		else if (CurrentChaoStage == 6)
+			njCnkDrawObject((NJS_CNK_OBJECT*)0x36AE5D4);
+		else if (CurrentChaoStage == 5)
+			njCnkDrawObject((NJS_CNK_OBJECT*)0x36AEC8C);
+		//0x36AE5D4 - hero
+		//0x36AEC8C - dark
 		njControl3D_Remove(NJD_CONTROL_3D_TRANS_MODIFIER | NJD_CONTROL_3D_SHADOW);
 		njPopMatrixEx();
+	}
+}
+void __cdecl Ball_Delete(ObjectMaster* a1)
+{
+	ChaoData1* v1; // eax
+	ALW_CancelEntry(a1);
+	if (a1->Data2)
+	{
+		HeapFreeSADX(a1->Data2);
+		a1->Data2 = 0;
+	}
+	if (a1->UnknownB_ptr)
+	{
+		HeapFreeSADX(a1->UnknownB_ptr);
+		a1->UnknownB_ptr = 0;
 	}
 }
 void Ball_Load(ObjectMaster* a1)
 {
 	ObjectFunc(ALO_Delete, 0x71A6B0);
 	AddToGlobalChaoThingMaybe(6, a1, 4, 0);
-	a1->DeleteSub = ALO_Delete;
+	a1->DeleteSub = Ball_Delete;
 	a1->MainSub = Ball_Main;
 	a1->DisplaySub = Ball_Display;
 	a1->Data1->Action = 1;
@@ -398,7 +419,7 @@ void CreateBall(NJS_VECTOR* pos, NJS_VECTOR* vel)
 	move->Gravity = -0.05f;
 	move->Top = 1.5f;
 	move->Bottom = -2.5f;
-	//move->BoundFloor = 0.85f;
+	move->BoundFloor = 0.85f;
 	move->Offset.y = 1.0f;
 	move->BoundFriction = 0.99f;
 	move->work.l = 0;
@@ -410,18 +431,7 @@ void CreateBall(NJS_VECTOR* pos, NJS_VECTOR* vel)
 	if (pianoData)
 	{
 		pianoData->Action = 0;
-		if (!GetModuleHandle(L"DCMods_Main")) {
-			pianoData->Position.x = -64;
-			pianoData->Position.y = 2;
-			pianoData->Position.z = 213;
-		}
-		else
-		{
-			pianoData->Position.x = -107;
-			pianoData->Position.y = 2;
-			pianoData->Position.z = 132.6;
-		}
-		pianoData->Position = { -52.5f ,0,-120.5f };
+		
 		pianoData->Rotation.y = 12800;
 		pianoData->Scale.x = 1;
 		pianoData->Scale.y = 1;

@@ -182,13 +182,11 @@ void Horse_Delete(ObjectMaster* a1)
 {
 	ObjectFunc(ALO_Delete, 0x71A6B0);
 	ALO_Delete(a1);
-	_HeapFree(a1->Data1);
-	a1->Data1 = 0;
-	_HeapFree(a1->Data2);
-	a1->Data2 = 0;
-	_HeapFree(a1->UnknownB_ptr);
-	a1->UnknownB_ptr = 0;
-
+	if (a1->UnknownB_ptr) 
+	{
+		_HeapFree(a1->UnknownB_ptr);
+		a1->UnknownB_ptr = 0;
+	}
 	//DeleteObjectMaster(a1);
 }
 

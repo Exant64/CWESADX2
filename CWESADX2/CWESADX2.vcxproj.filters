@@ -203,6 +203,9 @@
     <ClCompile Include="albhv\albhv_box.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="alo_growtree.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="data\motion\alm_crayonfix.nam" />

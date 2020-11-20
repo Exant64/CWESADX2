@@ -1,6 +1,6 @@
 #include "eff_tears.h"
 ParticleUserData cryingUserData = { 1, 0, 0, 8, 0.5, 0.99800003, -0.029999999, 0.0099999998, 0, 75000.0, 0, 0, 0, 0 };
-
+#include "..//chao.h"
 NJS_TEXANIM cryingTexAnim[] =
 { {0x20, 0x20, 0x10, 0x10, 0, 0x0FF, 0x0FF, 0, 78, 0} ,
 {0x20, 0x20, 0x10, 0x10, 0, 0x0FF, 0x0FF, 0, 79, 0} ,
@@ -29,8 +29,7 @@ void CryingParticle_Display(ObjectMaster* a1)
 		njPopMatrixEx();
 	}
 }
-FunctionPointer(void, HeapFreeSADX, (LPVOID lpMem), 0x00780FB0);
-FunctionPointer(void*, HeapAllocSADX, (int count, int size), 0x00780F90);
+
 void CryingParticle_Delete(ObjectMaster* a1)
 {
 	if (a1->UnknownB_ptr)
