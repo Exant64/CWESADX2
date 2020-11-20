@@ -124,7 +124,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;NDEBUG;CWESADX2_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;CWESADX2_EXPORTS;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
@@ -175,7 +175,9 @@
     <ClInclude Include="data\Flower2.h" />
     <ClInclude Include="data\TrumpetToy.h" />
     <ClInclude Include="eff\eff_tears.h" />
+    <ClInclude Include="FileSystem.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="IniFile.hpp" />
     <ClInclude Include="LandTableInfo.h" />
     <ClInclude Include="MemAccess.h" />
     <ClInclude Include="ModelInfo.h" />
@@ -193,8 +195,10 @@
     <ClInclude Include="SADXStructsNew.h" />
     <ClInclude Include="SADXVariables.h" />
     <ClInclude Include="SADXVariablesNew.h" />
+    <ClInclude Include="TextConv.hpp" />
     <ClInclude Include="Trampoline.h" />
     <ClInclude Include="UsercallFunctionHandler.h" />
+    <ClInclude Include="Utils.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="albhv\albhv_ball.cpp" />
@@ -217,6 +221,8 @@
     <ClCompile Include="chao.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="eff\eff_tears.cpp" />
+    <ClCompile Include="FileSystem.cpp" />
+    <ClCompile Include="IniFile.cpp" />
     <ClCompile Include="LandTableInfo.cpp" />
     <ClCompile Include="mod.cpp" />
     <ClCompile Include="ModelInfo.cpp" />
@@ -226,6 +232,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="TextConv.cpp" />
     <ClCompile Include="Trampoline.cpp" />
   </ItemGroup>
   <ItemGroup>

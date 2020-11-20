@@ -63,7 +63,8 @@ void LoadECGardenNew()
 {
 	LoadECGarden();
 	//ToysUnlocked = -1; //debug
-	PlaceRadio();
+	if (ToysUnlocked & (1 << AL_LTOY_RADICASE))
+		PlaceRadio();
 	NJS_VECTOR a3 = { 0,0,0 };
 	NJS_VECTOR ballPos = { 79,4.41f,-165};
 	if (ToysUnlocked & (1 << AL_LTOY_BALL_D))
@@ -144,6 +145,8 @@ void RaceUnlocks(ChaoSetmedalThing* a1)
 
 void Toys_Init()
 {
+	WriteCall((void*)0x0072E729, RaceUnlocks);
+
 	WriteCall((void*)0x007155D6, LoadSSGardenNew);
 	WriteCall((void*)0x007155F6, LoadMRGardenNew);
 	WriteCall((void*)0x007155E6, LoadECGardenNew);
