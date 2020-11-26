@@ -157,8 +157,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="alo_accessory.h" />
+    <ClInclude Include="alo_fruit.h" />
     <ClInclude Include="al_kinder_bm.h" />
     <ClInclude Include="al_knowledge.h" />
+    <ClInclude Include="AL_ModAPI.h" />
     <ClInclude Include="al_sound.h" />
     <ClInclude Include="al_toy\alo_ball.h" />
     <ClInclude Include="al_toy\alo_console.h" />
@@ -168,11 +171,13 @@
     <ClInclude Include="al_toy\alo_toy.h" />
     <ClInclude Include="al_toy\alo_tv.h" />
     <ClInclude Include="AnimationFile.h" />
+    <ClInclude Include="ChaoMain.h" />
     <ClInclude Include="d3d8types.h" />
     <ClInclude Include="data\DrumDC.h" />
     <ClInclude Include="data\DrumStickDC.h" />
     <ClInclude Include="data\Flower1.h" />
     <ClInclude Include="data\Flower2.h" />
+    <ClInclude Include="data\mixColorTable.h" />
     <ClInclude Include="data\TrumpetToy.h" />
     <ClInclude Include="eff\eff_tears.h" />
     <ClInclude Include="FileSystem.h" />
@@ -184,6 +189,7 @@
     <ClInclude Include="motiontable.h" />
     <ClInclude Include="ninja.h" />
     <ClInclude Include="njdef.h" />
+    <ClInclude Include="patchedcolors.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="SADXEnums.h" />
     <ClInclude Include="SADXEnumsNew.h" />
@@ -203,9 +209,12 @@
   <ItemGroup>
     <ClCompile Include="albhv\albhv_ball.cpp" />
     <ClCompile Include="albhv\albhv_box.cpp" />
+    <ClCompile Include="alo_accessory.cpp" />
+    <ClCompile Include="alo_fruit.cpp" />
     <ClCompile Include="alo_growtree.cpp" />
     <ClCompile Include="al_kinder_bm.cpp" />
     <ClCompile Include="al_knowledge.cpp" />
+    <ClCompile Include="AL_ModAPI.cpp" />
     <ClCompile Include="al_sound.cpp" />
     <ClCompile Include="al_toy\alo_ball.cpp" />
     <ClCompile Include="al_toy\alo_boat.cpp" />
@@ -219,6 +228,7 @@
     <ClCompile Include="al_toy\alo_tv.cpp" />
     <ClCompile Include="AnimationFile.cpp" />
     <ClCompile Include="chao.cpp" />
+    <ClCompile Include="ChaoMain.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="eff\eff_tears.cpp" />
     <ClCompile Include="FileSystem.cpp" />
@@ -236,6 +246,7 @@
     <ClCompile Include="Trampoline.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="data\cwe\object_common_cnk\alo_mannequin.nja" />
     <None Include="data\motion\alm_crayonfix.nam" />
     <None Include="data\toy\alm_box.njm" />
     <None Include="data\toy\object_al_toy_box.nja" />

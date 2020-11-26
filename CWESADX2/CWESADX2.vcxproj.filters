@@ -141,6 +141,24 @@
     <ClInclude Include="Utils.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="patchedcolors.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="data\mixColorTable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AL_ModAPI.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="alo_accessory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ChaoMain.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="alo_fruit.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -227,10 +245,23 @@
     <ClCompile Include="TextConv.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="AL_ModAPI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="alo_accessory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ChaoMain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="alo_fruit.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="data\motion\alm_crayonfix.nam" />
     <None Include="data\toy\alm_box.njm" />
     <None Include="data\toy\object_al_toy_box.nja" />
+    <None Include="data\cwe\object_common_cnk\alo_mannequin.nja" />
   </ItemGroup>
 </Project>

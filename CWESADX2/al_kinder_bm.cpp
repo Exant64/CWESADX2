@@ -4,13 +4,12 @@
 
 BlackMarketItem PurchasedItems[4];
 int PurchasedItemCount;
-struct ItemChance
-{
-	Sint8 item;
-	Sint8 chance;
-};
+
 std::vector<ItemChance> GeneralFruitMarket;
 std::vector<ItemChance> RareFruitMarket;
+std::vector<BlackMarketItemAttributes> FruitBMAttributesMod;
+std::vector<BlackMarketItemAttributes> HatBMAttributesMod;
+std::vector<BlackMarketItemAttributes> AccessoryBMAttributes;
 const int BlackMarketInventorySize = 32;
 void GeneralFruit()
 {

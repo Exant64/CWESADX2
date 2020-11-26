@@ -1240,6 +1240,7 @@ enum ChaoItemCategory : Sint8
 	ChaoItemCategory_Egg       = 1,
 	ChaoItemCategory_Fruit     = 3,
 	ChaoItemCategory_Seed      = 7, // SA2B only
+	ChaoItemCategory_Accessory = 8, //cwe
 	ChaoItemCategory_Hat       = 9,
 	ChaoItemCategory_MenuTheme = 16, // SA2B only
 };

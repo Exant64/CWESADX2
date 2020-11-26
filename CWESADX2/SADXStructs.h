@@ -989,8 +989,8 @@ struct ChaoDNA
 	char FavoriteFruit1;
 	char FavoriteFruit2;
 	char field_4C8[4];
-	char Color1;
-	char Color2;
+	unsigned char Color1;
+	unsigned char Color2;
 	char MonotoneFlag1;
 	char MonotoneFlag2;
 	char Texture1;

@@ -6,6 +6,8 @@
 #include "al_toy/alo_toy.h"
 #include "chao.h"
 #include "al_sound.h"
+#include "patchedcolors.h"
+#include "data/mixColorTable.h"
 
 extern "C"
 {
@@ -184,7 +186,31 @@ extern "C"
 			std::swap(ShinyJewelColors[i].g, ShinyJewelColors[i].a);
 		}
 	}
+	FunctionPointer(void, AL_BlendGene, (ChaoDNA* parent1, ChaoDNA* parent2, ChaoDNA* a3), 0x071DFC0);
+	void AL_CreateChildGene(ObjectMaster* pMotherTask, ObjectMaster* pFatherTask, ChaoDNA* pChildGene)
+	{
+		ChaoDNA FatherGene;
+		ChaoDNA MotherGene;
+		chaowk* wk1, *wk2;
+		wk1 = (chaowk*)pMotherTask->Data1;
+		wk2 = (chaowk*)pFatherTask->Data1;
+		memcpy(&MotherGene, &wk1->pParamGC->DNA, sizeof(ChaoDNA));
+		memcpy(&FatherGene, &wk2->pParamGC->DNA, sizeof(ChaoDNA));
 
+		AL_BlendGene(&MotherGene, &FatherGene, pChildGene);
+		PrintDebug("%d %d \n", pChildGene->Color1, pChildGene->Color2);
+		for (int i = 0; i < 210; i++)
+		{
+			if (pChildGene->Color1 == mixColorTable[i].color1 && pChildGene->Color2 == mixColorTable[i].color2)
+			{
+				pChildGene->Color1 = mixColorTable[i].result;
+				pChildGene->Color2 = mixColorTable[i].result;
+				break;
+			}
+		}
+
+
+	}
 	DataArray(MotionTableAction, ChaoAnimations, 0x36A94E8, 625);
 	__declspec(dllexport) void Init(const char *path, const HelperFunctions* function)
 	{
@@ -231,6 +257,16 @@ extern "C"
 			PatchShinyJewelPC();
 		if (config->getBool("Chao World Extended", "ShinyJewelGC", false))
 			PatchShinyJewelGC();
+
+		if (config->getBool("Chao World Extended", "ColorMixing", true))
+		{
+			for (int i = 0; i < 1025; i += 4)
+			{
+				std::swap(patchedColors[i + 0], patchedColors[i + 2]);
+			}
+			WriteData((int*)0x0078AE9B, (int)&patchedColors[0]);
+			WriteJump((void*)0x0071E490, AL_CreateChildGene);
+		}
 
 		//Crayon fix
 		NJS_MDATA2* data2 = (NJS_MDATA2*)ChaoAnimations[328].NJS_MOTION->mdata;
