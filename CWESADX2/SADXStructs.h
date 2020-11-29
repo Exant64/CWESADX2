@@ -1062,6 +1062,40 @@ struct AL_KNOWLEDGE_DX
 {
 	AL_KNOWLEDGE_PLAYER player[6];
 };
+
+#pragma pack(push, 8)
+struct __declspec(align(4)) KarateOpponent
+{
+	ChaoType ChaoType;
+	char EyeType;
+	char MouthType;
+	char BallType;
+	char Headgear;
+	char HideFeet;
+	char Medal;
+	char Color;
+	char Monotone;
+	char Texture;
+	char Shiny;
+	SA2BAnimal SA2BArmType;
+	SA2BAnimal SA2BEarType;
+	SA2BAnimal SA2BForeheadType;
+	SA2BAnimal SA2BHornType;
+	SA2BAnimal SA2BLegType;
+	SA2BAnimal SA2BTailType;
+	SA2BAnimal SA2BWingType;
+	SA2BAnimal SA2BFaceType;
+	char f13;
+	__int16 PowerRun;
+	__int16 FlySwim;
+	__int16 Alignment;
+	__int16 Magnitude;
+	char Name[7]; //name?
+	char unusedPossibly;
+	__int16 StatPoints[8];
+};
+#pragma pack(pop)
+
 struct ChaoDataBase
 {
 	char gap_0[18];
@@ -1128,12 +1162,30 @@ struct ChaoDataBase
 	SADXAnimal UnknownType;
 	char field_4EC[16];
 	AL_KNOWLEDGE_DX KnowledgeDX;
+	char Padding1[114];
+	char ShinyFruitValue;
+	char ShinyJewelMonotone;
+	char FreeSpace;
+	char GiftChaoValue; //unused for a while, we might pick this up again some time
+	char FreeSpace_;
+	char LobbyTextureValue; //same here
+	char FreeSpace__;
+	char EyeAlignment;
+	char EyeColor;
+	char AltMouthPatch;
+	char UpgradeCounter;
+	char freeSpace3;
+	char XGradeValue;
+	KarateOpponent motherData;
+	KarateOpponent fatherData;
+	unsigned char IsInitializedAccessory;
+	unsigned char Accessories[4];
 };
 
 struct ChaoData
 {
 	ChaoDataBase data;
-	char field_520[736];
+	char field_520[0x800 - sizeof(ChaoDataBase)];
 };
 
 struct ChaoUnknownB
@@ -1535,23 +1587,44 @@ struct Mysterious64Bytes
 	struct_v3 struct_v3_b;
 };
 
-struct ChunkModelThing
+struct  ChaoToyChunk
 {
-	NJS_CNK_OBJECT *model;
-	NJS_TEXLIST *texlist;
+	NJS_OBJECT* model;
+	NJS_TEXLIST* texlist;
 	float scale;
-	int what;
+	int exists;
 };
-
 struct ChunkObjectPointer
 {
-	NJS_CNK_OBJECT base[2];
-	char field_68[48];
-	ChunkModelThing thing;
+	NJS_OBJECT base;
+	ChunkObjectPointer* parent;
+	NJS_VECTOR differenceOrigOther;
+	int field_44;
+	int field_48;
+	int field_4C;
+	NJS_VECTOR originalPosition;
+	NJS_VECTOR field_5C;
+	float field_68;
+	int field_6C;
+	int field_70;
+	int field_74;
+	int field_78;
+	int field_7C;
+	int field_80;
+	int field_84;
+	int field_88;
+	int field_8C;
+	int field_90;
+	NJS_OBJECT* animalPart;
+	ChaoToyChunk toy;
 	int useTransform;
 	NJS_VECTOR position;
-	Rotation3 rotation;
+	Rotation rotation;
+	NJS_MATRIX_PTR Matrix;
+	NJS_VECTOR* field_C8;
+	int field_CC;
 };
+
 
 struct NBChunk
 {

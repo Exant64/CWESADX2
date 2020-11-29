@@ -33,18 +33,14 @@ void ChaoMain_Constructor_Hook()
 {
 	PrintDebug("ChaoMain Constructor\n");
 	//PrintDebug("ChaoSaveTimer = %d \n", ChaoSaveTimer);
-	LoadChaoTexlist("al_minda", &AL_SANDHOLE_TEXLIST, 1);
+	//LoadChaoTexlist("al_minda", &AL_SANDHOLE_TEXLIST, 1);
 	LoadChaoTexlist("CWE_OBJECT", &CWE_OBJECT_TEXLIST, 1);
-	LoadChaoTexlist("AL_OSAMENU_TEX_E", &AL_OSAMENU, 1);
+	//LoadChaoTexlist("AL_OSAMENU_TEX_E", &AL_OSAMENU, 1);
 	for (int i = 0; i < TexlistLoads.size(); i++)
 	{
 		LoadChaoTexlist(TexlistLoads[i].first, TexlistLoads[i].second, 1);
 	}
 
-	for (int i = 0; i < 15; i++)
-	{
-		LoadChaoTexlist(AnimalPVMNames[i], AnimalTexLists[25 + i], 1);
-	}
 }
 /*
 VoidFunc(sub_52E400, 0x52E400);
@@ -328,7 +324,7 @@ void sub_52F2A0()
 void ChaoMain_Init()
 {
 	//WriteCall((void*)0x0052B2DA, ChaoMain_subprgmanager_Hook);
-	WriteCall((void*)0x052AB7F, ChaoMain_Constructor_Hook);
+	WriteCall((void*)0x00715445, ChaoMain_Constructor_Hook);
 	//WriteJump((void*)0x52E920, sub_52E920);
 	//WriteJump((void*)0x52F2A0, sub_52F2A0);
 }

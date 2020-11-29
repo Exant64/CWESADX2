@@ -831,14 +831,15 @@ struct al_entry_work
 	void* pSaveInfo;
 	int CommuID;
 	NJS_POINT3 pos;
-	Angle3 ang;
+	Rotation3 ang;
 	float radius;
 	float offset;
 	float CamDist;
 	__int16 command;
 	__int16 command_value;
 	__int16 state;
-	task* tp;
+	__int16 padding;
+	ObjectMaster* tp;
 	al_entry_work* pCommu;
 	al_entry_work* pLockOn;
 };

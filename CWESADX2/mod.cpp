@@ -8,6 +8,15 @@
 #include "al_sound.h"
 #include "patchedcolors.h"
 #include "data/mixColorTable.h"
+#include "ChaoMain.h"
+
+#include "data/accessory/ala_glasses_round.nja"
+#include "data/accessory/ala_glasses_square.nja"
+#include "data/accessory/ala_bowtie_red.nja"
+#include "data/accessory/ala_baseballcap.nja"
+#include "data/accessory/ala_glasses_aviators.nja"
+#include "data/accessory/ala_headphones.nja"
+#include "AL_ModAPI.h"
 
 extern "C"
 {
@@ -208,19 +217,58 @@ extern "C"
 				break;
 			}
 		}
-
-
 	}
+
+	void RegisterCWEData()
+	{
+		AL_ModAPI_Init();
+
+#define ACCESSORYRINGS 2500
+		BlackMarketItemAttributes baseballAttrib = { ACCESSORYRINGS,500,0,-1,-1,0 };
+		BlackMarketItemAttributes bowtieRed = { ACCESSORYRINGS,500,0,-1,-1,0 };
+		BlackMarketItemAttributes roundGlasses = { ACCESSORYRINGS,500,0,-1,-1,0 };
+		BlackMarketItemAttributes aviators = { ACCESSORYRINGS,500,0,-1,-1,0 };
+		BlackMarketItemAttributes headphones = { ACCESSORYRINGS,500,0,-1,-1,0 };
+
+		RegisterChaoAccessory(EAccessoryType::Head, &object_ala_baseball, &CWE_OBJECT_TEXLIST, &baseballAttrib, "Baseball Cap", "");
+		RegisterChaoAccessory(EAccessoryType::Head, &object_ala_bowtie_red, &CWE_OBJECT_TEXLIST, &bowtieRed, "Bowtie", "");
+		RegisterChaoAccessory(EAccessoryType::Face, &object_ala_glasses_round, &CWE_OBJECT_TEXLIST, &roundGlasses, "Round Glasses", "");
+		RegisterChaoAccessory(EAccessoryType::Face, &object_ala_glasses_aviators, &CWE_OBJECT_TEXLIST, &aviators, "Aviators", "Glasses for high flyers.");
+		RegisterChaoAccessory(EAccessoryType::Head, &headphone_cups, &CWE_OBJECT_TEXLIST, &headphones, "Headphones", "Music makes you lose control.");
+		PrintDebug("%d count \n", BlackMarketCategories[ChaoItemCategory_Accessory].Count++);
+		AL_ModAPI_UpdatePtr();
+	}
+
+	int CWE_Loaded = 0;
+	void HookRegisterCWEData()
+	{
+		PrintDebug("ChaoMain Prolog\n");
+		if (!CWE_Loaded)
+		{
+
+			RegisterCWEData();
+			CWE_Loaded = 1;
+		}
+	}
+
 	DataArray(MotionTableAction, ChaoAnimations, 0x36A94E8, 625);
 	__declspec(dllexport) void Init(const char *path, const HelperFunctions* function)
 	{
 		const IniFile* config = new IniFile(std::string(path) + "\\config.ini");
 
+		PrintDebug("sizeof(ChaoData) = %d \n", sizeof(ChaoData));
+
+		//transporter fix
 		DataPointer(NJS_MODEL_SADX, transporterTest, 0x33CFC44);
 		for (int i = 0; i < transporterTest.nbMeshset; i++)
 			transporterTest.meshsets[i].vertcolor = nullptr; //disables vertcolor
 		for (int i = 361; i < 365; i++)
 			transporterTest.points[i].x = -11.705f; //fixes floating screen
+
+		ChaoMain_Init();
+
+		//cwe init on chao world load	
+		WriteCall((void*)0x0715AE5, HookRegisterCWEData);
 
 		//SADX tree progress speedup
 		*(float*)0x034BBADC = 0.00005f;
@@ -239,6 +287,10 @@ extern "C"
 		WriteCall((void*)0x0075E31F, RunFromPlayerOverwrite);
 		WriteCall((void*)0x0073CD4D, ThinkOverwrite);
 		WriteCall((void*)0x0075E169, ShiwerOverwrite);
+
+		WriteCall((void*)0x00717D7B, Accessory_Load);
+		WriteCall((void*)0x00717B2D, Accessory_Load);
+		//WriteCall((void*)0x00717D7B, Accessory_Load);
 
 		//not available for now, needs a huge rewrite
 		if (config->getBool("Chao World Extended", "3DEmotion", true))

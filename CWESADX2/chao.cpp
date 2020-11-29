@@ -9,6 +9,7 @@
 //#include "albhv/albhv_fishing.h"
 //#include "albhv/albhv_ball.h"
 #include "al_knowledge.h"
+#include "alo_accessory.h"
 
 FunctionPointer(void, SetChunkColor, (int a1), 0x0078A320);
 FunctionPointer(void, ApplyWSwitch, (int a1), 0x00717470);
@@ -94,7 +95,7 @@ signed int __cdecl ALBHV_HungryDada_(ObjectMaster* a1)
 		v17.z = 0.1f * v8->RightEyeVec.z;
 		CryingParticle_Load(&v17, &a3, 0.1);
 	}
-	
+
 	if (!(v2->Behavior.Timer % 60) && rand() * 0.000030517578125 < 0.5)
 	{
 		QueueSound_XYZ(1002, a1->Data1, 1, 120, a1->Data1->Position.x, a1->Data1->Position.y, a1->Data1->Position.z, 200);
@@ -190,7 +191,7 @@ LABEL_26:
 		AL_SHAPE* v13 = &v2->Shape;
 		NJS_VECTOR a3, v22;
 		float v14 = v13->LeftEyePos.y;
-		
+
 		float v15 = v13->LeftEyePos.x;
 		a3.y = v14;
 		float v16 = v13->LeftEyePos.z;
@@ -272,12 +273,12 @@ void ThinkControllerHook(ObjectMaster* a1, float* a2)
 		*a2 = 1;
 	}
 	AL_EmotionAdd(a1, EMOTION_ENUM::EM_ST_BREED, 10000);
-	if (GetChaoObject(0, 0) == a1) 
+	if (GetChaoObject(0, 0) == a1)
 	{
-		data1->pParamGC->DNA.Color1  = SADXRetailColour_Red;
+		data1->pParamGC->DNA.Color1 = SADXRetailColour_Red;
 		data1->pParamGC->DNA.Color2 = SADXRetailColour_Red;
 	}
-	if (GetChaoObject(0, 1) == a1) 
+	if (GetChaoObject(0, 1) == a1)
 	{
 		data1->pParamGC->DNA.Color1 = SADXRetailColour_Grey;
 		data1->pParamGC->DNA.Color2 = SADXRetailColour_Grey;
@@ -409,7 +410,7 @@ enum ChunkMaterialFlagsEnum
 	UseChunkObjectColor = 0x8,
 };
 
-void __cdecl ChaoColoring(int texture, int color, int shiny, int highlights, NJS_CNK_MODEL* model)
+void __cdecl ChaoColoring_(int texture, int color, int shiny, int highlights, NJS_CNK_MODEL* model)
 {
 	int flag; // esi
 	unsigned __int16 v6; // ax
@@ -471,7 +472,7 @@ void __cdecl ChaoColoring(int texture, int color, int shiny, int highlights, NJS
 	}
 }
 
-void __cdecl chSetRareMaterial(int texture, int color, int shiny, int highlights, NJS_CNK_MODEL* model, int mixColor1, int mixColor2)
+void __cdecl chSetRareMaterial_(int texture, int color, int shiny, int highlights, NJS_CNK_MODEL* model, int mixColor1, int mixColor2)
 {
 	int flag; // esi
 	unsigned __int16 v6; // ax
@@ -849,6 +850,554 @@ bool __cdecl ALBHV_Eda(ObjectMaster* a1)
 	return 0;
 }
 signed int sub_564760(ObjectMaster* a1);
+void AL_SetAccessory(ObjectMaster* a1, int type)
+{
+	chaowk* wk = (chaowk*)a1->Data1;
+	wk->pParamGC->Accessories[AccessoryTypeMap[type]] = type + 1;
+}
+int AL_GetAccessory(ObjectMaster* a1, int type)
+{
+	chaowk* wk = (chaowk*)a1->Data1;
+	return wk->pParamGC->Accessories[type];
+}
+
+FunctionPointer(void, AL_GrabObjectBothHands, (ObjectMaster* a1, ObjectMaster* a2), 0x00744810);
+FunctionPointer(signed int, AL_CheckObakeHead, (ObjectMaster* a1), 0x0073AE70);
+FunctionPointer(void*, AL_GetItemSaveInfo, (ObjectMaster* a1), 0x07176A0);
+FunctionPointer(void, AL_ClearItemSaveInfo, (void* a1), 0x00717670);
+FunctionPointer(void, AL_ClearItemSaveInfoPtr, (ObjectMaster* a1), 0x07176C0);
+//putting accessory on
+signed int __cdecl ALBHV_WearAccessory(ObjectMaster* a1)
+{
+	chaowk* v1; // esi
+	int v2; // eax
+	AL_BEHAVIOR* v3; // esi
+	int v4; // eax
+	al_entry_work* v6; // eax
+	al_entry_work* v7; // esi
+	ObjectMaster* v8; // eax
+	void* v9; // eax
+
+	v1 = (chaowk*)a1->Data1;
+	v2 = v1->Behavior.Mode;
+	v3 = &v1->Behavior;
+	if (!v2)
+	{
+		AL_SetMotionLinkStep(a1, 202, 0x23u);
+		++v3->Mode;
+		v3->Timer = 0;
+		return AL_MoveHoldingObject(a1) == 0;
+	}
+	v4 = v2 - 1;
+	if (v4)
+	{
+		if (v4 == 1 && AL_IsMotionStop(a1))
+		{
+			return 1;
+		}
+		return AL_MoveHoldingObject(a1) == 0;
+	}
+	v3->Timer++;
+	if (v3->Timer < 35 || !AL_IsMotionStop(a1))
+	{
+		return AL_MoveHoldingObject(a1) == 0;
+	}
+	v6 = ALW_IsCommunicating(a1);
+	v7 = v6;
+	if (v6)
+	{
+		v8 = v6->tp;
+		if (v8)
+		{
+			AL_SetAccessory(a1, v8->Data1->Rotation.x);
+			if (AL_GetItemSaveInfo(v7->tp))
+			{
+				v9 = AL_GetItemSaveInfo(v7->tp);
+				AL_ClearItemSaveInfo(v9);
+				AL_ClearItemSaveInfoPtr(v7->tp);
+			}
+			v7->tp->MainSub = DeleteObject_;
+		}
+	}
+	AL_SetMotionLinkStep(a1, 203, 0x23u);
+	return AL_MoveHoldingObject(a1) == 0;
+}
+signed int __cdecl ALBHV_PutOnAccessoryTemp(ObjectMaster* a1)
+{
+	chaowk* v1; // esi
+	int v2; // eax
+	AL_BEHAVIOR* v3; // esi
+	int v4; // eax
+	al_entry_work* v6; // eax
+	al_entry_work* v7; // esi
+	ObjectMaster* v8; // eax
+	void* v9; // eax
+
+	v1 = (chaowk*)a1->Data1;
+	v2 = v1->Behavior.Mode;
+	v3 = &v1->Behavior;
+	v6 = ALW_IsCommunicating(a1);
+	v7 = v6;
+	if (v6)
+	{
+		v8 = v6->tp;
+		if (v8)
+		{
+			AL_SetAccessory(a1, v8->Data1->Rotation.x);
+			if (AL_GetItemSaveInfo(v7->tp))
+			{
+				v9 = AL_GetItemSaveInfo(v7->tp);
+				AL_ClearItemSaveInfo(v9);
+				AL_ClearItemSaveInfoPtr(v7->tp);
+			}
+			v7->tp->MainSub = DeleteObject_;
+		}
+	}
+	return 1;
+}
+FunctionPointer(void, StopHoldingTaskP, (unsigned __int8 a1), 0x04420C0);
+signed int __cdecl ALBHV_TurnToAccessory(ObjectMaster* a1)
+{
+	chaowk* v1; // edi
+	char* v2; // eax
+	ObjectMaster* v3; // ebx
+	int v4; // eax
+	ChaoDataBase* v5; // ecx
+	signed int result; // eax
+	int v7; // eax
+
+	v1 = (chaowk*)a1->Data1;
+	if (!v1->Behavior.Mode)
+	{
+		AL_SetMotionLinkStep(a1, 202, 0xFu);
+		++v1->Behavior.Mode;
+		v1->Behavior.Timer = 60;
+	}
+	if (MOV_TurnToAim2(a1, 0x600) >= 0xB6)
+	{
+		return 0;
+	}
+	v3 = ALOField_Find2(a1->Data1, 0x94);
+	if (v3 != 0)
+	{
+		if (ALW_IsHeld(v3))
+		{
+			return 0;
+		}
+		StopHoldingTaskP(0);
+		AL_GrabObjectBothHands(a1, v3);
+		AL_SetBehaviorWithTimer(a1, ALBHV_HoldThink, -1);
+		v5 = v1->pParamGC;
+		if ((v1->pParamGC->SADXAnimalBehaviors & (1 << 13)) || (v1->pParamGC->SA2AnimalBehavior & (1 << 16)) && !AL_GetAccessory(a1, AccessoryTypeMap[v3->Data1->Rotation.x]))
+			AL_SetNextBehavior(a1, ALBHV_PutOnAccessoryTemp);
+		else
+			AL_SetNextBehavior(a1, ALBHV_Throw);
+
+		return 0;
+	}
+	else
+	{
+		v7 = v1->Behavior.Timer;
+		v1->Behavior.Timer = v7 - 1;
+		if (v7 > 0)
+		{
+			return 0;
+		}
+		result = 1;
+	}
+	return result;
+}
+signed int __cdecl AL_CheckAccessory(ObjectMaster* a1)
+{
+	signed int(__cdecl * v1)(ObjectMaster*); // eax
+	//ObjectMaster* v2; // eax
+	ObjectMaster* v3; // esi
+
+	v1 = AL_GetBehavior(a1);
+	if ((int)v1 == 0x5607C0)
+	{
+		return 0;
+	}
+	if ((int)v1 == 0x54EF10)
+	{
+		return 0;
+	}
+	if (v1 == ALBHV_TurnToAccessory)
+	{
+		return 0;
+	}
+
+	v3 = ALOField_Find2(a1->Data1, 0x94);
+	if (!v3)
+	{
+		return 0;
+	}
+	al_entry_work* v4 = (al_entry_work*)v3->UnknownA_ptr;
+	if (v4)
+	{
+		if (v4->flag & 2)
+		{
+			return 0;
+		}
+	}
+	MOV_SetAimPos(a1, &v3->Data1->Position);
+	//a1->EntityData2->Waypoint = v3->Data1->Position;
+	AL_SetBehaviorWithTimer(a1, ALBHV_TurnToAccessory, -1);
+	return 1;
+}
+signed int __cdecl AL_CheckObakeHeadAndAccessory(ObjectMaster* a1)
+{
+	return AL_CheckAccessory(a1) || AL_CheckObakeHead(a1);
+}
+VoidFunc(_before_cnk, 0x00720A10);
+VoidFunc(_after_cnk, 0x00720A40);
+FunctionPointer(void, sub_534E10, (ObjectMaster* a1, int a2), 0x007187D0);
+DataPointer(short, Chao_NodeIndex, 0x03CE04E4);
+FunctionPointer(void, njSetZCompare, (Uint8 index), 0x0077ED00);
+FunctionPointer(void, chRareEggDrawModel, (NJS_CNK_MODEL* a1, int a2), 0x0078AF10);
+FunctionPointer(void, AL_CalcMotionMartix, (ChunkObjectPointer* a1), 0x00765010);
+FunctionPointer(void, ChaoColoring, (int texture, int color, int shiny, int highlights, NJS_CNK_MODEL* model), 0x0078AE30);
+VoidFunc(npSetZCompare, 0x00401420);
+unsigned char DCWings = 0x90;
+unsigned char CharacterIndex = 0x14;
+void DrawChaoNew(ObjectMaster* a1, ChunkObjectPointer* chunkObjectPointer)
+{
+	NJS_OBJECT* v14; // eax
+	NJS_OBJECT* v18; // eax
+	NJS_OBJECT* v19; // eax
+	NJS_OBJECT* v20; // eax
+	signed int v36; // esi
+	char v37; // zf
+	int v44; // [esp+28h] [ebp-38h]
+
+	while (1)
+	{
+		chaowk* wk = (chaowk*)a1->Data1;
+		njPushMatrixEx();
+		AL_CalcMotionMartix(chunkObjectPointer);
+		//chibi chao lol
+		//if (Chao_NodeIndex == 0)
+			//njScale(0.5, 0.5, 0.5);
+		//if (Chao_NodeIndex == 17 ||
+			//Chao_NodeIndex == 20)
+			//njScale(1.5, 1.5, 1.5);
+		if (chunkObjectPointer->toy.model)
+		{
+			njSetTexture(chunkObjectPointer->toy.texlist);
+			SetChunkMaterialFlags(SecondTextureEnvironmentMap);
+			njPushMatrixEx();
+			if (chunkObjectPointer->useTransform)
+			{
+				njTranslate(
+					0,
+					chunkObjectPointer->position.x,
+					chunkObjectPointer->position.y,
+					chunkObjectPointer->position.z);
+				if (chunkObjectPointer->rotation.z)
+				{
+					njRotateZ(0, chunkObjectPointer->rotation.z);
+				}
+				if (chunkObjectPointer->rotation.y)
+				{
+					njRotateY(0, chunkObjectPointer->rotation.y);
+				}
+				if (chunkObjectPointer->rotation.x)
+				{
+					njRotateX(0, chunkObjectPointer->rotation.x);
+				}
+			}
+			njScale(0, chunkObjectPointer->toy.scale, chunkObjectPointer->toy.scale, chunkObjectPointer->toy.scale);
+			//SetFlag(1);
+			njCnkDrawObject(chunkObjectPointer->toy.model);
+			//SetFlag(0);
+			njPopMatrixEx();
+			SetChunkMaterialFlags(0);
+		}
+
+
+		if (Chao_NodeIndex == 1)
+		{
+
+		}
+
+		if (Chao_NodeIndex == 16)
+		{
+
+			if (wk->pParamGC->Accessories[0])
+			{
+				njSetTexture(Accessories[wk->pParamGC->Accessories[0] - 1].second);
+				njCnkDrawObject(Accessories[wk->pParamGC->Accessories[0] - 1].first);
+			}
+			if (wk->pParamGC->Accessories[1])
+			{
+				njSetTexture(Accessories[wk->pParamGC->Accessories[1] - 1].second);
+				njCnkDrawObject(Accessories[wk->pParamGC->Accessories[1] - 1].first);
+			}
+			if (wk->pParamGC->Accessories[2])
+			{
+				njSetTexture(Accessories[wk->pParamGC->Accessories[2] - 1].second);
+				njCnkDrawObject(Accessories[wk->pParamGC->Accessories[2] - 1].first);
+			}
+
+			if (wk->pParamGC->Headgear)
+			{
+				njSetTexture(&ChaoTexLists[0]);
+				njSetTexture(ChaoTexLists);
+				switch (wk->pParamGC->Headgear)
+				{
+				case SADXHat_Pumpkin:
+					njSetZCompare(3u);
+					njCnkDrawObject(&ChaoHat_Pumpkin);
+					npSetZCompare();
+					break;
+				case SADXHat_Skull:
+					njCnkDrawObject(&ChaoHat_Skull);
+					break;
+				case SADXHat_Apple:
+					njSetZCompare(3u);
+					njCnkDrawObject(&ChaoHat_Apple);
+					npSetZCompare();
+					break;
+				case SADXHat_Bucket:
+					njCnkDrawObject(&ChaoHat_Bucket);
+					break;
+				case SADXHat_EmptyCan:
+					njCnkDrawObject(&ChaoHat_EmptyCan);
+					break;
+				case SADXHat_CardboardBox:
+					njSetZCompare(3u);
+					njCnkDrawObject(&ChaoHat_CardboardBox);
+					npSetZCompare();
+					break;
+				case SADXHat_FlowerPot:
+					njSetZCompare(3u);
+					_before_cnk();
+					njCnkDrawObject(&ChaoHat_FlowerPot);
+					_after_cnk();
+					npSetZCompare();
+					break;
+				case SADXHat_PaperBag:
+					njSetZCompare(3u);
+					njCnkDrawObject(&ChaoHat_PaperBag);
+					npSetZCompare();
+					break;
+				case SADXHat_Pan:
+					_before_cnk();
+					njCnkDrawObject(&ChaoHat_Pan_A);
+					_after_cnk();
+					njSetZCompare(3u);
+					_before_cnk();
+					njCnkDrawObject(&ChaoHat_Pan_B);
+					_after_cnk();
+					npSetZCompare();
+					_before_cnk();
+					njCnkDrawObject(&ChaoHat_Pan_C);
+					_after_cnk();
+					break;
+				case SADXHat_Stump:
+					njCnkDrawObject(&ChaoHat_Stump);
+					break;
+				case SADXHat_Watermelon:
+					njSetZCompare(3u);
+					njCnkDrawObject(&ChaoHat_Watermelon);
+					npSetZCompare();
+					break;
+				case SADXHat_RedWoolBeanie:
+					njSetZCompare(3u);
+					njCnkDrawObject(&ChaoHat_RedWoolBeanie);
+					npSetZCompare();
+					break;
+				case SADXHat_BlueWoolBeanie:
+					njSetZCompare(3u);
+					njCnkDrawObject(&ChaoHat_BlueWoolBeanie);
+					npSetZCompare();
+					break;
+				case SADXHat_BlackWoolBeanie:
+					njSetZCompare(3u);
+					njCnkDrawObject(&ChaoHat_BlackWoolBeanie);
+					npSetZCompare();
+					break;
+				case SADXHat_Pacifier:
+					njCnkDrawObject(&ChaoHat_Pacifier);
+					break;
+				default:
+					njPushMatrixEx();
+					DataPointer(NJS_OBJECT, EggShell, 0x035E2A14);
+					njTranslate(0, 0.0, EggShell.pos[1], 0.0);
+					chRareEggDrawModel(EggShell.chunkmodel, (unsigned __int8)wk->pParamGC->Headgear - 16);
+					njPopMatrixEx();
+					njSetZCompare(3u);
+					njCnkDrawObject((NJS_OBJECT*)0x35E2BBC);
+					npSetZCompare();
+					njCnkDrawObject((NJS_OBJECT*)0x35E2DCC);
+					break;
+
+					goto LABEL_97;
+				}
+			}
+		}
+		else if (Chao_NodeIndex == 1)
+		{
+			if (wk->pParamGC->HideFeet && wk->pParamGC->Type < (unsigned __int8)ChaoType_Neutral_Chaos)
+			{
+				njSetTexture(ChaoTexLists);
+				sub_534E10(a1, (unsigned __int8)wk->entity.Index);
+				DataArray(NJS_CNK_OBJECT*, ChaoFeetHiddenModels, 0x03600930, 25);
+				*((_DWORD*)ChaoFeetHiddenModels[wk->pParamGC->Type]->chunkmodel->plist + 1) = *((_DWORD*)chunkObjectPointer->base.chunkmodel->plist
+					+ 1);
+				ChaoColoring(
+					wk->pParamGC->Texture,
+					wk->pParamGC->Color,
+					wk->pParamGC->Shiny,
+					wk->pParamGC->MonotoneHighlights,
+					chunkObjectPointer->base.chunkmodel);
+				njCnkDrawObject(ChaoFeetHiddenModels[wk->pParamGC->Type]);
+				SetChunkMaterialFlags(0);
+				DisableChunkMaterialFlags();
+				goto LABEL_95;
+			}
+		}
+		else if (Chao_NodeIndex == 35 && wk->pParamGC->Medal)
+		{
+			njSetTexture(&ChaoTexLists[4]);
+			_before_cnk();
+			njCnkDrawObject(ChaoJewelModels[wk->pParamGC->Medal]);
+			_after_cnk();
+			goto LABEL_98;
+		}
+		if (((!wk->pParamGC->Headgear)
+			|| Chao_NodeIndex != 18
+			&& Chao_NodeIndex != 21
+			&& Chao_NodeIndex != 19
+			&& Chao_NodeIndex != 22
+			&& Chao_NodeIndex != 23
+			&& Chao_NodeIndex != 25
+			&& Chao_NodeIndex != 24
+			&& Chao_NodeIndex != 26
+			&& Chao_NodeIndex != 30
+			&& Chao_NodeIndex != 31
+			&& Chao_NodeIndex != 27
+			&& Chao_NodeIndex != 29)
+			&& (!wk->pParamGC->HideFeet
+				|| wk->pParamGC->Type >= (unsigned __int8)CharacterIndex
+				|| ((DCWings == 0x90) || (Chao_NodeIndex != 37 && Chao_NodeIndex != 39)) && Chao_NodeIndex != 6 && Chao_NodeIndex != 13 && Chao_NodeIndex != 8))
+		{
+			if (chunkObjectPointer->animalPart && wk->pParamGC->Type < CharacterIndex)
+			{
+				njSetTexture((NJS_TEXLIST*)0x033A1340);
+				_before_cnk();
+				DrawCnkModel((NJS_CNK_MODEL*)chunkObjectPointer->animalPart->model);
+				_after_cnk();
+			}
+			else if (chunkObjectPointer->base.chunkmodel)
+			{
+				v36 = wk->Face.EyeLidExpressionCurrSlopeAng;
+				v44 = wk->Face.EyeLidExpressionCurrCloseAng + wk->Face.EyeLidBlinkAng - 0x4000;
+				switch (Chao_NodeIndex)
+				{
+				case 19:
+					njSetTexture(&ChaoTexLists[0]);
+					ChaoColoring(
+						wk->pParamGC->Texture,
+						wk->pParamGC->Color,
+						wk->pParamGC->Shiny,
+						wk->pParamGC->MonotoneHighlights,
+						chunkObjectPointer->base.chunkmodel);
+					sub_534E10(a1, a1->Data1->Index);
+					v37 = v36 == 0;
+					goto LABEL_86;
+				case 22:
+					njSetTexture(&ChaoTexLists[0]);
+					ChaoColoring(
+						wk->pParamGC->Texture,
+						wk->pParamGC->Color,
+						wk->pParamGC->Shiny,
+						wk->pParamGC->MonotoneHighlights,
+						chunkObjectPointer->base.chunkmodel);
+					sub_534E10(a1, a1->Data1->Index);
+					v36 = -v36;
+					v37 = v36 == 0;
+				LABEL_86:
+					if (v36)
+					{
+						njRotateZ(0, v36);
+					}
+					if (v44)
+					{
+						njRotateX(0, v44);
+					}
+				LABEL_91:
+					if (Chao_NodeIndex != 19 && Chao_NodeIndex != 22
+						|| wk->Face.EyeLidExpressionCurrCloseAng + wk->Face.EyeLidBlinkAng)
+					{
+						break;
+					}
+				LABEL_96:
+					SetChunkMaterialFlags(0);
+					DisableChunkMaterialFlags();
+				LABEL_97:
+					goto LABEL_98;
+				case 27:
+					njSetTexture(&ChaoTexLists[5]);
+					break;
+				case 18:
+				case 21:
+					njSetTexture(&ChaoTexLists[2]);
+					if (Chao_NodeIndex != 18)
+					{
+						njTranslate(0, -wk->Face.EyePosX, wk->Face.EyePosY, 0);
+						goto LABEL_91;
+					}
+					njTranslate(0, wk->Face.EyePosX, wk->Face.EyePosY, 0);
+					break;
+				default:
+					njSetTexture(&ChaoTexLists[0]);
+					if ((DCWings == 0x90) || (Chao_NodeIndex != 37 && Chao_NodeIndex != 39))
+					{
+						ChaoColoring(
+							wk->pParamGC->Texture,
+							wk->pParamGC->Color,
+							wk->pParamGC->Shiny,
+							wk->pParamGC->MonotoneHighlights,
+							chunkObjectPointer->base.chunkmodel);
+
+					}
+					sub_534E10(a1, a1->Data1->Index);
+					goto LABEL_91;
+				}
+				if (Chao_NodeIndex == 27)
+				{
+					njSetZCompare(3u);
+					DrawCnkModel(chunkObjectPointer->base.chunkmodel);
+					njSetZCompare(1u);
+				}
+				else
+				{
+					DrawCnkModel(chunkObjectPointer->base.chunkmodel);
+				}
+			LABEL_95:
+				goto LABEL_96;
+			}
+		}
+		LABEL_98:
+			SetMaterialAndSpriteColor((NJS_ARGB*)0x3B18230);
+			SetChunkMaterialFlags(0);
+			DisableChunkMaterialFlags();
+		Chao_NodeIndex++;
+		if (chunkObjectPointer->base.child)
+		{
+			DrawChao(a1, (ChunkObjectPointer*)chunkObjectPointer->base.child);
+		}
+		njPopMatrixEx();
+		if (!chunkObjectPointer->base.sibling)
+		{
+			break;
+		}
+		chunkObjectPointer = (ChunkObjectPointer*)chunkObjectPointer->base.sibling;
+	}
+}
+
+
 void Chao_Init()
 {
 	//attempt at patching something
@@ -856,19 +1405,23 @@ void Chao_Init()
 
 	WriteJump(ALBHV_Houki, ALBHV_HoukiRe);
 
+	WriteJump((void*)0x0073E730, DrawChaoNew);
+
 	//character chao
 	WriteJump((void*)0x0073C3A0, Chao_Evolve2);
 
 	//sound restoration, todo restore particles
 	WriteJump(ALBHV_HungryDada, ALBHV_HungryDada_);
 	WriteJump(ALBHV_Cry, ALBHV_Cry_);
-		
+
 	//console restoration 
 	//WriteJump(ALBHV_GoToTV, ALBHV_GoToBoat);
 
 	//temp debug hanabi
 	//WriteJump(ALBHV_Think, ALBHV_Eda);
 	//WriteJump(ALBHV_Think, ALBHV_GoToBoat);
+
+	WriteCall((void*)0x071EE7F, AL_CheckObakeHeadAndAccessory);
 
 	//float toy
 	//WriteCall((void*)0x0073C13F, ALBHV_FloatCheck);

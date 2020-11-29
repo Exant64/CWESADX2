@@ -8,7 +8,7 @@ void AL_NameDisplay_Create();
 ObjectMaster* AL_LargeTitleBar_Create();
 DataPointer(int, ChaoSaveTimer, 0x019F6474);
 VoidFunc(sub_583C60, 0x583C60);
-FunctionPointer(void, ProjectToScreen, (float screenX, float screenY, float worldSpaceZ), 0x005848F0);
+FunctionPointer(void, ProjectToScreen, (float screenX, float screenY, float worldSpaceZ), 0x732DB0);
 extern bool DayNightCheat;
 extern int SeasonIndicator;
 extern int TimeOfDay;

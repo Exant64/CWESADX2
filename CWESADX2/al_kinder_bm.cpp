@@ -1,15 +1,19 @@
 #include "SADXModLoader.h"
 #include "al_kinder_bm.h"
 #include <random>
+#include "AL_ModAPI.h"
+#include "ChaoMain.h"
 
+#include "alo_fruit.h"
 BlackMarketItem PurchasedItems[4];
 int PurchasedItemCount;
-
+extern NJS_OBJECT object_alo_mannequin;
 std::vector<ItemChance> GeneralFruitMarket;
 std::vector<ItemChance> RareFruitMarket;
 std::vector<BlackMarketItemAttributes> FruitBMAttributesMod;
 std::vector<BlackMarketItemAttributes> HatBMAttributesMod;
 std::vector<BlackMarketItemAttributes> AccessoryBMAttributes;
+FunctionPointer(int, GetTotalNumberEmblem, (), 0x0725380);
 const int BlackMarketInventorySize = 32;
 void GeneralFruit()
 {
@@ -25,13 +29,57 @@ void GeneralFruit()
 		}
 	}
 }
+void RareFruit()
+{
+	for (size_t i = 0; i < RareFruitMarket.size(); i++)
+	{
+		if (BlackMarketItemCount >= BlackMarketInventorySize)
+			break;
+		int v11 = (signed int)(rand() * 0.000030517578125f * 100.0f);
+		int item = RareFruitMarket[i].item;
+		if (item == SA2BFruit_Mushroom)
+		{
+			float random = (double)rand() * 0.000030517578125f;
+			if (random < 0.3f)
+				item = SA2BFruit_MushroomAlt;
+		}
+		if (GetTotalNumberEmblem() >= BlackMarketCategories[ChaoItemCategory_Fruit].attrib[item].RequiredEmblems)
+		{
+			if (v11 < RareFruitMarket[i].chance) {
+				BlackMarketInventory[BlackMarketItemCount].Category = ChaoItemCategory_Fruit;
+				BlackMarketInventory[BlackMarketItemCount].Type = item;
+				BlackMarketItemCount++;
+			}
+		}
+	}
 
+}
 //get max object count sub_717650
 //also this sub_7253C0
 
 //7174B0 sets the held item type
 
 //7174D0 checks purchaseditemcount || already holding chao
+int __cdecl sub_717650(int a1)
+{
+	int result; // eax
+
+	if (a1 == 3)
+	{
+		result = 40;
+	}
+	else if(a1 == ChaoItemCategory_Accessory)
+	{
+		return 24;
+	}
+	else
+	{
+		result = a1 != 9 ? 0 : 0x18;
+	}
+
+
+	return result;
+}
 int CanIPurchase()
 {
 	if (PurchasedItemCount >= 4)
@@ -92,6 +140,7 @@ void DrawPurchasedItems()
 				v2 = 5;
 				break;
 			case 7:
+			case 8:
 				v2 = 3;
 				break;
 			default:
@@ -250,6 +299,9 @@ void __cdecl sub_548F40(ObjectMaster* a2)
 			case 3:
 				GardenFruit_Create(v10, &position, PlayerPtrs[0]->Data1->Rotation.y, &output, AL_GetNewItemSaveInfo(3));
 				break;
+			case ChaoItemCategory_Accessory:
+				Accessory_Load(v10 + 256, &position, PlayerPtrs[0]->Data1->Rotation.y, &output, (short*)AL_GetNewItemSaveInfo(9));
+				break;
 			case 9:
 				GardenHat_Create(v10, &position, PlayerPtrs[0]->Data1->Rotation.y, &output, AL_GetNewItemSaveInfo(9));
 				break;
@@ -284,15 +336,601 @@ void __cdecl sub_548F40(ObjectMaster* a2)
 	}
 }
 
-
 DataArray(ItemChance, GeneralFruitChances, 0x0885584, 4);
 DataArray(BlackMarketItemAttributes, BMFruit, 0x884658, 23);
+struct SSellEgg
+{
+	__int16 emblem0;
+	__int16 emblem1;
+	char id[3];
+};
+
+DataArray(SSellEgg, kSellEggList, 0x00885508, 10);
+
+std::vector<bool> set(255);
+FunctionPointer(void, BlackMarketAddInventory, (ChaoItemCategory category, char type), 0x00726B20);
+void FBuyListAddSet100(std::vector<bool>& set, ChaoItemCategory category)
+{
+	for (int i = 0; i < set.size(); i++)
+	{
+		if (set[i])
+		{
+			BlackMarketAddInventory(category, i);
+			set[i] = false;
+		}
+	}
+}
+DataArray(unsigned char, byte_8A2C7C, 0x885580, 4);
+char byte_8A2EFC[] =
+{ '\x01', '\x02', '\x03', '\0' };
+char byte_8A2FA4[4] =
+{ '\x04', '\x05', '\x06', '\0' };
+
+FunctionPointer(void, chRareEggDrawModel, (NJS_CNK_MODEL* a1, int a2), 0x0078AF10);
+void FBuyListUpdate()
+{
+	int v3; // edi
+	int v5; // ebx
+	signed int v16; // edi
+	int v19; // ecx
+	int v22; // ebp
+	char* v23; // esi
+	signed int v26; // edi
+	BlackMarketItemAttributes* v29; // ecx
+	signed int v30; // esi
+	signed int v31; // eax
+	signed int v35; // ebx
+	signed int v38; // eax
+	double v49; // st7
+	int v51; // [esp+10h] [ebp-4Ch]
+	char v54[255]; // [esp+38h] [ebp-24h]
+
+
+	BlackMarketItemCount = 0;
+	v3 = 0;
+	for (int i = 0; i < 10; i++)
+	{
+		if (GetTotalNumberEmblem() >= kSellEggList[i].emblem0)
+		{
+			int selectedEggID = kSellEggList[i].id[((*(int*)0x19F6464 + *(int*)0x19F6468) & 0x7FFFFFFF) % 3];
+			if (GetTotalNumberEmblem() >= kSellEggList[i].emblem1) //shiny emblem
+			{
+				if ((double)rand() * 0.000030517578125 < 0.300000011920929)
+				{
+					selectedEggID += 27;
+				}
+			}
+			v54[v3++] = selectedEggID;
+		}
+	}
+	v5 = 1 + (signed int)((double)rand() * 0.000030517578125 * 5.0);
+	if (v3 > v5)
+	{
+		v22 = 0;
+
+		if (BlackMarketItemCount < BlackMarketInventorySize)
+		{
+			do
+			{
+				if (v22 >= v5)
+				{
+					break;
+				}
+				v23 = &v54[(signed int)((double)rand() * 0.000030517578125 * (double)v3)];
+				--v3;
+				++v22;
+				set[*v23] = true;
+				*v23 = (char)v54[v3];
+			} while (v22 + BlackMarketItemCount < BlackMarketInventorySize);
+		}
+		FBuyListAddSet100(set, ChaoItemCategory_Egg);
+	}
+	else
+	{
+		if (v3 > 0)
+		{
+			for (int i = 0; i < v3; i++)
+			{
+				if (BlackMarketItemCount >= BlackMarketInventorySize)
+				{
+					break;
+				}
+				BlackMarketAddInventory(ChaoItemCategory_Egg, v54[i]);
+			}
+		}
+	}
+
+	GeneralFruit();
+	v16 = 0;
+	if (BlackMarketItemCount < BlackMarketInventorySize)
+	{
+		do
+		{
+			if (v16 >= 2)
+			{
+				break;
+			}
+			int id = byte_8A2C7C[(signed int)((double)rand() * 0.000030517578125 * 3.0)];
+			if (!set[id])
+			{
+				set[id] = true;
+				++v16;
+			}
+		} while (v16 + BlackMarketItemCount < BlackMarketInventorySize);
+	}
+	FBuyListAddSet100(set, ChaoItemCategory_Fruit);
+
+	v19 = BlackMarketItemCount;
+	if (BlackMarketItemCount < BlackMarketInventorySize)
+	{
+		//BlackMarketAddInventory(ChaoItemCategory_Seed, 0);
+		if (BlackMarketItemCount < BlackMarketInventorySize)
+		{
+			if ((double)rand() * 0.000030517578125 < 0.7f)
+			{
+				//BlackMarketAddInventory(ChaoItemCategory_Seed, byte_8A2EFC[-(signed int)((double)rand() * 0.000030517578125 * -3.0)]);
+			}
+		}
+	}
+	v26 = 0;
+	if (BlackMarketItemCount < BlackMarketInventorySize)
+	{
+		do
+		{
+			if (v26 >= 2)
+			{
+				break;
+			}
+			int id = byte_8A2FA4[(signed int)((double)rand() * 0.000030517578125 * 3.0)];
+			if (!set[id])
+			{
+				set[id] = true;
+				++v26;
+			}
+		} while (v26 + BlackMarketItemCount < BlackMarketInventorySize);
+	}
+	//FBuyListAddSet100(set, ChaoItemCategory_Seed);
+
+	v29 = BlackMarketCategories[ChaoItemCategory_Hat].attrib;
+	v30 = 0;
+	v31 = 0;
+	do
+	{
+		if (v31 != SA2BHat_BlueWoolBeanie
+			&& v31 != SA2BHat_BlackWoolBeanie
+			&& v29->PurchasePrice > 0
+			&& GetTotalNumberEmblem() >= v29->RequiredEmblems)
+			//&& (rand() * 0.000030517578125) > 0.5
+			//&& v31 < 32)
+		{
+			v54[v30++] = v31;
+		}
+		++v31;
+		++v29;
+	} while (v31 < HatBMAttributesMod.size());
+	if (v30 > 5)
+	{
+		v35 = 0;
+
+		if (BlackMarketItemCount < BlackMarketInventorySize)
+		{
+			do
+			{
+				if (v35 >= 5)
+				{
+					break;
+				}
+				int id = v54[(signed int)((double)rand() * 0.000030517578125 * (double)v30)];
+				if (id == SA2BHat_RedWoolBeanie)
+				{
+					v38 = (signed int)((double)rand() * 0.000030517578125 * 31.0);
+					if (v38 >= 5)
+					{
+						if (v38 < 15
+							&& GetTotalNumberEmblem() >= BlackMarketCategories[ChaoItemCategory_Hat].attrib[SADXHat_BlueWoolBeanie].RequiredEmblems)
+						{
+							id = SA2BHat_BlueWoolBeanie;
+						}
+					}
+					else if (GetTotalNumberEmblem() >= BlackMarketCategories[ChaoItemCategory_Hat].attrib[SADXHat_BlackWoolBeanie].RequiredEmblems)
+					{
+						id = SA2BHat_BlackWoolBeanie;
+					}
+				}
+				if (GetTotalNumberEmblem() >= BlackMarketCategories[ChaoItemCategory_Hat].attrib[id].RequiredEmblems)
+				{
+					if (!set[id])
+					{
+						set[id] = true;
+						++v35;
+					}
+				}
+			} while (v35 + BlackMarketItemCount < BlackMarketInventorySize);
+		}
+		FBuyListAddSet100(set, ChaoItemCategory_Hat);
+	}
+	else
+	{
+		if (v30 > 0)
+		{
+			for (int i = 0; i < v30; i++)
+				if (BlackMarketItemCount < BlackMarketInventorySize)
+				{
+					BlackMarketAddInventory(ChaoItemCategory_Hat, v54[i]);
+				}
+		}
+	}
+
+	//accessory, hardcoded type
+	for (int i = 0; i < AccessoryBMAttributes.size(); i++)
+	{
+		if (GetTotalNumberEmblem() >= AccessoryBMAttributes[i].RequiredEmblems &&
+			rand() * 0.000030517578125 >= 0.75)
+		{
+			BlackMarketAddInventory(ChaoItemCategory_Accessory, i);
+		}
+	}
+
+	RareFruit();
+
+}
+int __cdecl sub_721AD0(BlackMarketItem* a1)
+{
+	signed int v1; // edx
+	int v2; // ecx
+	int result; // eax
+	BlackMarketCategoryAttribute* v4; // edx
+
+	v1 = a1->Category;
+	v2 = a1->Type;
+	result = 0;
+	PrintDebug("%d %d \n", a1->Category, a1->Type);
+	if (v1 >= 0 && v1 < 11)
+	{
+		v4 = &BlackMarketCategories[v1];
+		if (v4)
+		{
+			if (v2 >= 0 && v2 < v4->Count)
+			{
+				result = (int)&v4->attrib[v2];
+			}
+		}
+	}
+	return result;
+}
+
+void __cdecl Preview1(BlackMarketData* a1)
+{
+	njPushMatrixEx();
+
+	float v45 = 164;
+	BlackMarketItem* item = &BlackMarketInventory[a1->field_A0];
+	int index = a1->field_A0;
+	for (float v45 = 164; v45 < 302 + 46; v45 += 46)
+	{
+		njUnitMatrix(0);
+		
+		switch (item->Category)
+		{
+		case ChaoItemCategory_Egg:
+			ProjectToScreen(56.0, (v45 + 2), -68.0);
+			if (index == a1->field_9C && a1->field_A4)
+			{
+				njRotateY(0, a1->field_A4);
+			}
+			njSetTexture((NJS_TEXLIST*)&ChaoTexLists[0]);
+			chRareEggDrawModel((NJS_CNK_MODEL*)0x3601B7C, item->Type);
+			break;
+		case ChaoItemCategory_Accessory:
+			ProjectToScreen(56.0f, v45 - 15, -52);
+
+			if (index == a1->field_9C && a1->field_A4)
+			{
+				njRotateY(0, a1->field_A4);
+			}
+			njTranslate(0, 0.0f, -1.4f, 0.0f);
+			/*
+#ifdef MANNEQUIN
+			njSetTexture(&CWE_OBJECT_TEXLIST);
+			njCnkDrawObject(&object_alo_mannequin);
+#endif
+*/
+			njSetTexture(Accessories[item->Type].second);
+			njCnkDrawObject(Accessories[item->Type].first);
+			break;
+		case ChaoItemCategory_Fruit:
+			ProjectToScreen(56.0, (v45 - 13), -44.0);
+			if (item->Type == 20 || item->Type == 21)
+			{
+				njScale(0, 1, 1, 1);
+			}
+			else
+			{
+				njScale(0, 1, 1, 0.001f);
+			}
+			if (index == a1->field_9C && a1->field_A4)
+			{
+				njRotateY(0, a1->field_A4);
+			}
+			//njSetTexture(FruitObjects[item->Type].first);
+			//sub_42D340();
+			//sub_42D500(FruitObjects[item->Type].second->chunkmodel);
+			break;
+		case ChaoItemCategory_Seed:
+			ProjectToScreen(56.0, (v45), -22.0);
+
+			njScale(0, 1, 1, 0.001f);
+
+			if (index == a1->field_9C && a1->field_A4)
+			{
+				njRotateY(0, a1->field_A4);
+			}
+			njSetTexture(&AL_OBJECT_TEXLIST);
+			//sub_42D340();
+			//sub_42D500(((NJS_OBJECT * *)0x012E537C)[item->Type]->chunkmodel);
+			break;
+		case ChaoItemCategory_Hat:
+			if (item->Type >= SA2BHat_NormalEggShell && item->Type < 85)
+				break;
+
+			if (item->Type == 15)
+				ProjectToScreen(56.0f, v45 - 15, *(float*)0xC712FC);
+			else
+				ProjectToScreen(56.0f, v45 - 15, -52);
+			if (index == a1->field_9C && a1->field_A4)
+			{
+				njRotateY(0, a1->field_A4);
+			}
+			switch (item->Type)
+			{
+			case 4:
+			case 6:
+			case 7:
+			case 8:
+			case 9:
+				njRotateX(0, 0x8000);
+				break;
+			default:
+				break;
+			}
+
+			if (item->Type == 15)
+				njTranslate(0, 0.0f, -0.13f, 0.0f);
+			else
+				njTranslate(0, 0.0f, -1.4f, 0.0f);
+
+			njSetTexture(&ChaoTexLists[0]);
+
+			if (item->Type >= 85)
+			{
+				PrintDebug("UNIMPLEMENTED");
+				//njSetTexture(MaskObjObjectList[item->Type - 85].second);
+				//njCnkDrawObject(MaskObjObjectList[item->Type - 85].first);
+			}
+			else
+			{
+				//njSetZCompare(3u);
+				njCnkDrawObject(ChaoItemModels[item->Type]);
+				//npSetZCompare();
+				njPopMatrixEx();
+			}
+			break;
+
+		default:
+			break;
+		}
+		item = &BlackMarketInventory[++index];
+	}
+	njPopMatrixEx();
+
+}
+void __cdecl Preview2(BlackMarketData* a1)
+{
+	njPushMatrixEx();
+
+	njUnitMatrix(0);
+	int type = a1->field_51;
+	switch (a1->gap50)
+	{
+	case ChaoItemCategory_Accessory:
+		ProjectToScreen(390.0f, 212.0f, -26.0f / a1->field_90);
+		if (a1->field_88)
+		{
+			njRotateX(0, a1->field_88);
+		}
+		if (a1->field_8C)
+		{
+			njRotateY(0, a1->field_8C);
+		}
+		njTranslate(0, 0.0, -1.4, 0.0);
+
+		njSetTexture(&CWE_OBJECT_TEXLIST);
+		njCnkDrawObject(&object_alo_mannequin);
+
+		njSetTexture(Accessories[type].second);
+		njCnkDrawObject(Accessories[type].first);
+		
+		break;
+	case ChaoItemCategory_Egg:
+		ProjectToScreen(390.0, 212.0, -34.0 / a1->field_90);
+		if (a1->field_88)
+		{
+			njRotateX(0, a1->field_88);
+		}
+		if (a1->field_8C)
+		{
+			njRotateY(0, a1->field_8C);
+		}
+		njTranslate(0, 0.0, -2.8, 0.0);
+		njSetTexture((NJS_TEXLIST*)0x013669FC);
+		chRareEggDrawModel((NJS_CNK_MODEL*)0x3601B7C, type);
+		break;
+	case 2:
+		ProjectToScreen(390.0, 212.0, -26.0 / a1->field_90);
+		njScale(0, 1.0, 1.0, *(float*)0x173B43C);
+		if (a1->field_88)
+		{
+			njRotateX(0, a1->field_88);
+		}
+		if (a1->field_8C)
+		{
+			njRotateY(0, a1->field_8C);
+		}
+	
+		{
+			njScale(0, 1.2, 1.2, 1.2);
+			njSetTexture((NJS_TEXLIST*)0x171A294);
+			njCnkDrawObject(((NJS_OBJECT * *)0x0171A294)[type]);
+			DataArray(NJS_OBJECT*, AnimalModels, 0x03608A90, 20);
+			DataArray(NJS_MOTION*, off_3619AD4, 0x3619AD4, 20);
+			njSetTexture(AnimalTexLists[type]);
+			njAction_QueueObject(AnimalModels[type], off_3619AD4[type], *(float*)((int)a1 + 160));
+		}
+
+
+		break;
+	case ChaoItemCategory_Fruit:
+		ProjectToScreen(390.0, 212.0, -22.0 / a1->field_90);
+		njScale(0, 1.0, 1.0, *(float*)0x173B43C);
+		if (a1->field_88)
+		{
+			njRotateX(0, a1->field_88);
+		}
+		if (a1->field_8C)
+		{
+			njRotateY(0, a1->field_8C);
+		}
+		njTranslate(0, 0.0, -0.4f, 0.0);
+		//njSetTexture(FruitObjects[type].first);
+		//DrawCnkModel(FruitObjects[type].second->chunkmodel);
+		break;
+	case ChaoItemCategory_Seed:
+		ProjectToScreen(390.0, 212.0, -11.0 / a1->field_90);
+		njScale(0, 1.0, 1.0, *(float*)0x173B43C);
+		if (a1->field_88)
+		{
+			njRotateX(0, a1->field_88);
+		}
+		if (a1->field_8C)
+		{
+			njRotateY(0, a1->field_8C);
+		}
+		njTranslate(0, 0.0, -0.8f, 0.0);
+		njSetTexture(&AL_OBJECT_TEXLIST);
+		//DrawCnkModel(((NJS_OBJECT * *)0x012E537C)[type]->chunkmodel);
+		break;
+	case ChaoItemCategory_Hat:
+		if (type >= 16 && type <= 84)
+		{
+			ProjectToScreen(390.0f, 212.0f, -26.0f / a1->field_90);
+			if (a1->field_88)
+			{
+				njRotateX(0, a1->field_88);
+			}
+			if (a1->field_8C)
+			{
+				njRotateY(0, a1->field_8C);
+			}
+			njTranslate(0, 0.0f, -1.4f, 0.0f);
+			njSetTexture(&ChaoTexLists[0]);
+			chRareEggDrawModel((NJS_CNK_MODEL*)0x35E29FC, type - 16);
+		}
+		else
+		{
+			if (type == 15)
+				ProjectToScreen(390.0f, 212.0f, -13.0f / a1->field_90);
+			else
+				ProjectToScreen(390.0f, 212.0f, -26.0f / a1->field_90);
+
+			if (a1->field_88)
+			{
+				njRotateX(0, a1->field_88);
+			}
+			if (a1->field_8C)
+			{
+				njRotateY(0, a1->field_8C);
+			}
+			switch (type)
+			{
+			case 4:
+			case 6:
+			case 7:
+			case 8:
+			case 9:
+				njRotateX(0, 0x8000);
+				break;
+			default:
+				break;
+			}
+
+			if (type == 15)
+				njTranslate(0, 0.0, -0.15, 0.0);
+			else
+				njTranslate(0, 0.0, -1.4, 0.0);
+
+
+			if (type >= 85)
+			{
+				if (!HideHatVec[type - 85])
+				{
+					njSetTexture(&CWE_OBJECT_TEXLIST);
+					njCnkDrawObject(&object_alo_mannequin);
+				}
+			}
+
+			njSetTexture(&ChaoTexLists[0]);
+
+			if (type >= 85)
+			{
+				//njSetTexture(MaskObjObjectList[type - 85].second);
+				//njCnkDrawObject(MaskObjObjectList[type - 85].first);
+			}
+			else
+				njCnkDrawObject(ChaoItemModels[type]);
+		}
+		break;
+
+	default:
+		break;
+	}
+
+	njPopMatrixEx();
+
+	//DoLighting(LightIndexBackupMaybe);
+}
+const int JumpBackHere = 0x007277ED;
+int backupesi;
+void __declspec(naked) Preview1Hook()
+{
+	
+	_asm
+	{
+		mov backupesi, esi
+		push esi
+		call Preview1
+		add esp, 4
+		mov esi, backupesi
+		jmp JumpBackHere
+	}
+}
+const int JumpBackHere_ = 0x005897C3;
+void __declspec(naked) Preview2Hook()
+{
+	_asm
+	{
+		push[esp + 0x2C]
+		call Preview2
+		add esp, 4
+		jmp JumpBackHere_
+	}
+}
 void al_kinder_bm_Init()
 {
 	for (int i = 0; i < 4; i++)
 	{
 		GeneralFruitMarket.push_back(GeneralFruitChances[i]);
 	}
+	WriteJump((void*)0x00728A54, (void*)0x728CFD);
 
 	//gba fruit
 	for (int i = 13; i < 20; i++)
@@ -302,15 +940,26 @@ void al_kinder_bm_Init()
 
 		BMFruit[i].Name = 106 + (i - 13);
 		BMFruit[i].Description = 106 + (i - 13);
-		BMFruit[i].PurchasePrice = 350;
+		BMFruit[i].PurchasePrice = 350;	
 		BMFruit[i].SalePrice = 75;
 		BMFruit[i].RequiredEmblems = 0;
 	}
 
+	//TEMP PATCH
+	WriteData<2>((char*)0x007284BF, (char)0x90);
+
+	WriteJump((void*)0x0726B80, FBuyListUpdate);
+	WriteJump((void*)0x721AD0, sub_721AD0); //debug
 	//general fruit
-	WriteData((int*)0x00726D1E, (int)(&GeneralFruitMarket.data()->chance));
-	WriteData((int*)0x00726D29, (int)GeneralFruitMarket.data());
-	WriteData((char*)0x726D3D, (char)(GeneralFruitMarket.size() * 2));
+	//WriteData((int*)0x00726D1E, (int)(&GeneralFruitMarket.data()->chance));
+	//WriteData((int*)0x00726D29, (int)GeneralFruitMarket.data());
+	//WriteData((char*)0x726D3D, (char)(GeneralFruitMarket.size() * 2));
+
+	WriteJump((void*)0x0072731B, Preview1Hook);
+	//WriteJump((void*)0x005891E8, Preview2Hook);
+
+	//accessory
+	WriteJump((void*)0x717650, sub_717650);
 
 	//purchase item hack
 	WriteCall((void*)0x00727D57, ReturnDummyItem); //makes sure the game doesnt allocate any space for the object

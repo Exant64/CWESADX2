@@ -10,7 +10,7 @@
 #include "ChaoMain.h"
 std::vector<std::pair<NJS_OBJECT*, NJS_TEXLIST*>> Accessories;
 std::map<int, EAccessoryType> AccessoryTypeMap;
-VoidFunc(sub_42D340, 0x42D340);
+
 extern NJS_OBJECT object_alo_mannequin;
 
 void Accessory_Display(ObjectMaster* a1)
@@ -32,6 +32,7 @@ void Accessory_Display(ObjectMaster* a1)
 FunctionPointer(ObjectMaster*, ALO_ObakeHeadCreate, (int a1, NJS_VECTOR* a2, int a3, NJS_VECTOR* a4, int a5), 0x007236F0);
 ObjectMaster* Accessory_Load(int ID, NJS_VECTOR* position, int rotY, NJS_VECTOR* velocity, short* savedata)
 {
+	//ID = 256;
 	ObjectMaster* obj = ALO_ObakeHeadCreate(ID, position, rotY, velocity, (int)savedata);
 	if (ID >= 256) {
 		//is accessory

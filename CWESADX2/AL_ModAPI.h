@@ -21,7 +21,6 @@ struct HatEntry
 };
 
 void LoadMsgAlItem(char* filename);
-void* GenerateMsgBuffer();
 
 using RegisterDataFuncPtr = void(__cdecl*)();
 using LastBiteFruitFuncPtr = void(__cdecl*)(ChaoData* chaoData, ObjectMaster* fruit);

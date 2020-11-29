@@ -131,7 +131,6 @@ extern "C" {
 	__declspec(dllexport) void Chao_RegAnimation(ObjectMaster* a1, std::string name)
 	{
 		//PrintDebug("playing registered animation %s, index %d \n", name, registeredAnimations[name]);
-		//Chao_Animation(&a1->Data1.Chao->MotionTable, registeredAnimations[name]);
 		AL_SetMotionLink(a1, registeredAnimations[name]);
 	}
 	__declspec(dllexport) MOTION_TABLE* GetChaoAnimations()
@@ -354,8 +353,8 @@ void Animation_Init()
 {
 	//Animation
 	MOTION_TABLE* actions = (MOTION_TABLE*)0x036A94E8;
-	chaoAnimations.insert(chaoAnimations.end(), actions, &actions[622]);
-	if (chaoAnimations.size() < 622)
+	chaoAnimations.insert(chaoAnimations.end(), actions, &actions[625]);
+	if (chaoAnimations.size() < 625)
 		PrintDebug("Animation_Init: Couldnt copy animations!!!\n");
 	WriteJump((void*)0x00734EC0, LoadChaoMotionTableMod);
 }
@@ -445,10 +444,10 @@ void LoadTexlistsHook()
 	}
 }
 
-//FunctionPointer(void*, LoadChaoMessageFile, (const char* filename, int language), 0x072C060);
-void LoadMsgAlItem(char* filename)
+FunctionPointer(void*, AlMsgStrLoad, (const char* filename), 0x0072C180);
+void __cdecl LoadMsgAlItem(const char* filename)
 {
-	int* loadedFile = (int*)LoadChaoMessageFile(filename, TextLanguage);
+	int* loadedFile = (int*)AlMsgStrLoad(filename);
 	if (loadedFile)
 	{
 		int v12 = 0;
@@ -457,12 +456,13 @@ void LoadMsgAlItem(char* filename)
 			unsigned int* v13 = (unsigned int*)& loadedFile[v12];
 			MsgAlItem.push_back((const char*)(*v13 + (char*)loadedFile));
 			++v12;
-		} while (loadedFile[v12] != -1);
+		} 
+		while (loadedFile[v12] != -1);
 	}
 }
 
 std::vector<unsigned char> MsgBuffer;
-void* GenerateMsgBuffer()
+void* __cdecl GenerateMsgBuffer(const char* a1)
 {
 	MsgBuffer.clear();
 	int pointer = 4 * (MsgAlItem.size() + 1);
@@ -475,20 +475,85 @@ void* GenerateMsgBuffer()
 		MsgBuffer.push_back(ptrBuffer[0]);
 		pointer += strlen(MsgAlItem[i]) + 1;
 	}
-	MsgBuffer.push_back(0xFF); MsgBuffer.push_back(0xFF); MsgBuffer.push_back(0xFF); MsgBuffer.push_back(0xFF);
+	MsgBuffer.push_back(0xFF); 
+	MsgBuffer.push_back(0xFF); 
+	MsgBuffer.push_back(0xFF); 
+	MsgBuffer.push_back(0xFF);
 	for (int i = 0; i < MsgAlItem.size(); i++)
 	{
 		for (int j = 0; j < strlen(MsgAlItem[i]); j++)
 			MsgBuffer.push_back(MsgAlItem[i][j]);
 		MsgBuffer.push_back(0);
 	}
+	PrintDebug("%s \n", a1);
 	return MsgBuffer.data();
 }
+const char* __cdecl sub_7258A0_(BlackMarketItemAttributes* a1, int a2)
+{
+	const char* result; // eax
+	__int16 v3; // dx
 
+	result = 0;
+	if (a1)
+	{
+		v3 = a1->Name;
+		if (v3 >= 0)
+		{
+			result = (const char*)MsgAlItem[v3];
+		}
+	}
+	return result;
+}
+static void __declspec(naked) sub_7258A0()
+{
+	__asm
+	{
+		push[esp + 04h] // a2
+		push ecx // a1
+
+		// Call your __cdecl function here:
+		call sub_7258A0_
+
+		pop ecx // a1
+		add esp, 4 // a2
+		retn
+	}
+}
+const char* __cdecl sub_7258C0_(BlackMarketItemAttributes* a1, int a2)
+{
+	const char* result; // eax
+	__int16 v3; // dx
+
+	result = 0;
+	if (a1)
+	{
+		v3 = a1->Description;
+		if (v3 >= 0)
+		{
+			result = (const char*)MsgAlItem[v3];
+		}
+	}
+	return result;
+}
+static void __declspec(naked) sub_7258C0()
+{
+	__asm
+	{
+		push[esp + 04h] // a2
+		push ecx // a1
+
+		// Call your __cdecl function here:
+		call sub_7258C0_
+
+		pop ecx // a1
+		add esp, 4 // a2
+		retn
+	}
+}
 void AL_ModAPI_Init()
 {
 	//dynamic msg 
-	LoadMsgAlItem((char*)"ChaoDXMessageItem");
+	LoadMsgAlItem("ChaoDX_Message_Item");
 
 	//Fruit
 	for (int i = SA2BFruit_ChaoGardenFruit; i < 24; i++) {
@@ -510,8 +575,9 @@ void AL_ModAPI_Init()
 	}
 
 	//load msgalitem custom
-	WriteCall((void*)0x0058B71C, GenerateMsgBuffer);
-
+	//WriteCall((void*)0x0728434, GenerateMsgBuffer);
+	WriteJump((void*)0x7258A0, sub_7258A0);
+	WriteJump((void*)0x7258C0, sub_7258C0);
 	//WriteJump((void*)0x00589552, BlackMarketPreview);
 	//WriteJump((void*)0x0058A827, BlackMarketPreview2);
 	//WriteJump((void*)0x00589574, BlackMarketHatHook);

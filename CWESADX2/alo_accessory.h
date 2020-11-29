@@ -1,4 +1,5 @@
 #pragma once
+#include <map>
 enum EAccessoryType : unsigned char
 {
 	Head = 0,
