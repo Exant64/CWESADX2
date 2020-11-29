@@ -613,7 +613,19 @@ enum
 	G_PER_FICKLE = 0xC,
 	NB_G_PER = 0xD,
 };
-
+#pragma pack(push, 8)
+struct __declspec(align(2)) ITEM_SAVE_INFO
+{
+	__int16 Type;
+	__int16 Garden;
+	__int16 Size;
+	__int16 Age;
+	NJS_VECTOR position;
+};
+#pragma pack(pop)
+FunctionPointer(void, njSetZCompare, (Uint8 index), 0x0077ED00);
+VoidFunc(npSetZCompare, 0x00401420);
+FunctionPointer(ITEM_SAVE_INFO*, AL_GetNewItemSaveInfo, (int a1), 0x00717760);
 void SwimControl(ObjectMaster* a1);
 FunctionPointer(bool, ALW_IsHeld, (ObjectMaster* a1), 0x71A320);
 FunctionPointer(signed int, AL_TraceHoldingPosition, (ObjectMaster* a1), 0x744790);

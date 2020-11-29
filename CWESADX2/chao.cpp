@@ -1045,6 +1045,42 @@ signed int __cdecl AL_CheckAccessory(ObjectMaster* a1)
 	AL_SetBehaviorWithTimer(a1, ALBHV_TurnToAccessory, -1);
 	return 1;
 }
+void __cdecl AccessoryRemove1(ObjectMaster* a1, BHV_FUNC a2)
+{
+	chaowk* wk = (chaowk*)a1->Data1;
+	MOVE_WORK* mvwk = (MOVE_WORK*)a1->Data2;
+	AL_SetBehavior(a1, ALBHV_Damage);
+	for (int i = 0; i < 4; i++) //todo: remove hardcoded accessory count
+	{
+		if (wk->pParamGC->Accessories[i])
+		{
+			void* saveinfo = AL_GetNewItemSaveInfo(9);
+			if (saveinfo)
+			{
+				Accessory_Load((wk->pParamGC->Accessories[i] - 1) + 256, &wk->entity.Position, (double)rand() * 0.000030517578125 * 360.0 * 182.0444488525391, &mvwk->Velo, (short*)saveinfo);
+				wk->pParamGC->Accessories[i] = 0;
+			}
+		}
+	}
+}
+void __cdecl AccessoryRemove2(ObjectMaster* a1, BHV_FUNC a2)
+{
+	chaowk* wk = (chaowk*)a1->Data1;
+	MOVE_WORK* mvwk = (MOVE_WORK*)a1->Data2;
+	AL_SetBehavior(a1, ALBHV_Thrown);
+	for (int i = 0; i < 4; i++) //todo: remove hardcoded accessory count
+	{
+		if (wk->pParamGC->Accessories[i])
+		{
+			void* saveinfo = AL_GetNewItemSaveInfo(9);
+			if (saveinfo)
+			{
+				Accessory_Load((wk->pParamGC->Accessories[i] - 1) + 256, &wk->entity.Position, (double)rand() * 0.000030517578125 * 360.0 * 182.0444488525391, &mvwk->Velo, (short*)saveinfo);
+				wk->pParamGC->Accessories[i] = 0;
+			}
+		}
+	}
+}
 signed int __cdecl AL_CheckObakeHeadAndAccessory(ObjectMaster* a1)
 {
 	return AL_CheckAccessory(a1) || AL_CheckObakeHead(a1);
@@ -1053,11 +1089,11 @@ VoidFunc(_before_cnk, 0x00720A10);
 VoidFunc(_after_cnk, 0x00720A40);
 FunctionPointer(void, sub_534E10, (ObjectMaster* a1, int a2), 0x007187D0);
 DataPointer(short, Chao_NodeIndex, 0x03CE04E4);
-FunctionPointer(void, njSetZCompare, (Uint8 index), 0x0077ED00);
+
 FunctionPointer(void, chRareEggDrawModel, (NJS_CNK_MODEL* a1, int a2), 0x0078AF10);
 FunctionPointer(void, AL_CalcMotionMartix, (ChunkObjectPointer* a1), 0x00765010);
 FunctionPointer(void, ChaoColoring, (int texture, int color, int shiny, int highlights, NJS_CNK_MODEL* model), 0x0078AE30);
-VoidFunc(npSetZCompare, 0x00401420);
+
 unsigned char DCWings = 0x90;
 unsigned char CharacterIndex = 0x14;
 void DrawChaoNew(ObjectMaster* a1, ChunkObjectPointer* chunkObjectPointer)
@@ -1421,7 +1457,10 @@ void Chao_Init()
 	//WriteJump(ALBHV_Think, ALBHV_Eda);
 	//WriteJump(ALBHV_Think, ALBHV_GoToBoat);
 
+	//accessories
 	WriteCall((void*)0x071EE7F, AL_CheckObakeHeadAndAccessory);
+	WriteCall((void*)0x00738AFA, AccessoryRemove1);
+	WriteCall((void*)0x0073923B, AccessoryRemove2);
 
 	//float toy
 	//WriteCall((void*)0x0073C13F, ALBHV_FloatCheck);

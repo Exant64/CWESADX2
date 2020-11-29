@@ -3,7 +3,7 @@
 #include <random>
 #include "AL_ModAPI.h"
 #include "ChaoMain.h"
-
+#include "chao.h"
 #include "alo_fruit.h"
 BlackMarketItem PurchasedItems[4];
 int PurchasedItemCount;
@@ -68,7 +68,7 @@ int __cdecl sub_717650(int a1)
 	{
 		result = 40;
 	}
-	else if(a1 == ChaoItemCategory_Accessory)
+	else if (a1 == ChaoItemCategory_Accessory)
 	{
 		return 24;
 	}
@@ -86,16 +86,7 @@ int CanIPurchase()
 		return 0;
 	else return -1;
 }
-#pragma pack(push, 8)
-struct __declspec(align(2)) ITEM_SAVE_INFO
-{
-	__int16 Type;
-	__int16 Garden;
-	__int16 Size;
-	__int16 Age;
-	NJS_VECTOR position;
-};
-#pragma pack(pop)
+
 
 
 ITEM_SAVE_INFO dummyItemHack;
@@ -140,9 +131,9 @@ void DrawPurchasedItems()
 				v2 = 5;
 				break;
 			case 7:
-			case 8:
 				v2 = 3;
 				break;
+			case 8:
 			default:
 				v2 = 6;
 				break;
@@ -192,10 +183,10 @@ void AlItemIconTaskExecHook()
 
 FunctionPointer(int, AL_GetCurrGardenChaoCount, (), 0x00715DF0);
 FunctionPointer(ChaoDataBase*, AL_GetNewChaoSaveInfo, (), 0x00715E60);
-FunctionPointer(ITEM_SAVE_INFO*, AL_GetNewItemSaveInfo, (int a1), 0x00717760);
+
 FunctionPointer(ObjectMaster*, GardenHat_Create, (int a1, NJS_VECTOR* a2, int a3, NJS_VECTOR* a4, ITEM_SAVE_INFO* a5), 0x007236F0);
 FunctionPointer(void, GardenFruit_Create, (int a1, NJS_VECTOR* position, Angle angle, NJS_VECTOR* a4, ITEM_SAVE_INFO* a5), 0x722DE0);
-FunctionPointer(void, MOV_SetVelo, (ObjectMaster* a1, NJS_VECTOR* a2), 0x0073FFE0);
+
 void __cdecl sub_548F40(ObjectMaster* a2)
 {
 	EntityData1* v1; // esi
@@ -365,7 +356,8 @@ char byte_8A2EFC[] =
 { '\x01', '\x02', '\x03', '\0' };
 char byte_8A2FA4[4] =
 { '\x04', '\x05', '\x06', '\0' };
-
+DataArray(NJS_CNK_OBJECT*, ChaoItemModels_, 0x36008E8, 10);
+DataArray(NJS_CNK_OBJECT*, ChaoFruitModels_, 0x33C05A0, 20);
 FunctionPointer(void, chRareEggDrawModel, (NJS_CNK_MODEL* a1, int a2), 0x0078AF10);
 void FBuyListUpdate()
 {
@@ -592,54 +584,117 @@ int __cdecl sub_721AD0(BlackMarketItem* a1)
 		{
 			if (v2 >= 0 && v2 < v4->Count)
 			{
-				result = (int)&v4->attrib[v2];
+				result = (int)& v4->attrib[v2];
 			}
 		}
 	}
 	return result;
 }
+inline NJS_POINT2 get_offset(Uint8 align, const NJS_POINT2& center)
+{
+	NJS_POINT2 offset = { 0,0 };
 
+	// if we're scaling a background with fill mode, manually set
+	// coordinate offset so the entire image lands in the center.
+
+	float scale_h = HorizontalStretch;
+	float scale_v = VerticalStretch;
+
+	float scale_min = min(scale_h, scale_v);
+	float scale_max = max(scale_h, scale_v);
+
+
+	const auto h = static_cast<float>(HorizontalResolution);
+	const auto v = static_cast<float>(VerticalResolution);
+
+	if (h / scale_v > 640.0f)
+	{
+		offset.x = (h - 640.0f * scale_min) / 2.0f;
+	}
+	if (v / scale_h > 480.0f)
+	{
+		offset.y = (v - 480.0f * scale_min) / 2.0f;
+	}
+
+
+	return offset;
+}
+
+float HorizStretch(float X)
+{
+	float scale_h = HorizontalStretch;
+	float scale_v = VerticalStretch;
+
+	float scale_min = min(scale_h, scale_v);
+	float scale_max = max(scale_h, scale_v);
+	NJS_POINT2 point = { X, 0 };
+	
+	//return  X * scale_min + get_offset(0, point).x;
+	if(X >= 320)
+		return HorizontalStretch * 320 + (X - 320);
+	else
+		return HorizontalStretch * 320 - (320 - X);
+}
+float VertiStretch(float X)
+{
+	float scale_h = HorizontalStretch;
+	float scale_v = VerticalStretch;
+
+	float scale_min = min(scale_h, scale_v);
+	float scale_max = max(scale_h, scale_v);
+	NJS_POINT2 point = { 0, X };
+	//return X * scale_min + get_offset(0, point).x;
+//	if (X >= 240)
+//		return VerticalStretch * 240.0f - (320 - X);
+	return 
+		(X - 240.0f) + (VerticalStretch * 240.0f);
+}
+float VertiStretch2(float X)
+{
+	return VerticalStretch * 240.0 - (240 - X);
+}
 void __cdecl Preview1(BlackMarketData* a1)
 {
-	njPushMatrixEx();
-
+	//njPushMatrixEx();
+	int field_AC = *(int*)((int)& a1->field_A0 + 0xC);
 	float v45 = 164;
-	BlackMarketItem* item = &BlackMarketInventory[a1->field_A0];
-	int index = a1->field_A0;
-	for (float v45 = 164; v45 < 302 + 46; v45 += 46)
+	BlackMarketItem* item = &BlackMarketInventory[field_AC];
+	int index = field_AC;
+	for (float v45 = 161; v45 < 321; v45 += 40)
 	{
-		njUnitMatrix(0);
-		
+		njPushMatrixEx();
+		//njUnitMatrix(0);
+
 		switch (item->Category)
 		{
 		case ChaoItemCategory_Egg:
-			ProjectToScreen(56.0, (v45 + 2), -68.0);
+			ProjectToScreen(HorizStretch(56.0), VertiStretch(v45 + 17), -68.0);
 			if (index == a1->field_9C && a1->field_A4)
 			{
 				njRotateY(0, a1->field_A4);
 			}
-			njSetTexture((NJS_TEXLIST*)&ChaoTexLists[0]);
+			njSetTexture((NJS_TEXLIST*)& ChaoTexLists[0]);
+
+			njScale(0, 1.0 / HorizontalStretch, 1.0 / HorizontalStretch, 1.0 / HorizontalStretch);
 			chRareEggDrawModel((NJS_CNK_MODEL*)0x3601B7C, item->Type);
 			break;
 		case ChaoItemCategory_Accessory:
-			ProjectToScreen(56.0f, v45 - 15, -52);
+			ProjectToScreen(HorizStretch(56.0f), VertiStretch(v45), -52);
 
 			if (index == a1->field_9C && a1->field_A4)
 			{
 				njRotateY(0, a1->field_A4);
 			}
 			njTranslate(0, 0.0f, -1.4f, 0.0f);
-			/*
-#ifdef MANNEQUIN
+
 			njSetTexture(&CWE_OBJECT_TEXLIST);
 			njCnkDrawObject(&object_alo_mannequin);
-#endif
-*/
+
 			njSetTexture(Accessories[item->Type].second);
 			njCnkDrawObject(Accessories[item->Type].first);
 			break;
 		case ChaoItemCategory_Fruit:
-			ProjectToScreen(56.0, (v45 - 13), -44.0);
+			ProjectToScreen(HorizStretch(56.0), VertiStretch(v45), -44.0);
 			if (item->Type == 20 || item->Type == 21)
 			{
 				njScale(0, 1, 1, 1);
@@ -652,9 +707,10 @@ void __cdecl Preview1(BlackMarketData* a1)
 			{
 				njRotateY(0, a1->field_A4);
 			}
-			//njSetTexture(FruitObjects[item->Type].first);
+			njSetTexture((NJS_TEXLIST*)0x033A11F0);
 			//sub_42D340();
-			//sub_42D500(FruitObjects[item->Type].second->chunkmodel);
+
+			DrawCnkModel(ChaoFruitModels_[item->Type]->chunkmodel);
 			break;
 		case ChaoItemCategory_Seed:
 			ProjectToScreen(56.0, (v45), -22.0);
@@ -674,9 +730,9 @@ void __cdecl Preview1(BlackMarketData* a1)
 				break;
 
 			if (item->Type == 15)
-				ProjectToScreen(56.0f, v45 - 15, *(float*)0xC712FC);
+				ProjectToScreen(HorizStretch(56.0f), VertiStretch(v45), -52);//*(float*)0xC712FC);
 			else
-				ProjectToScreen(56.0f, v45 - 15, -52);
+				ProjectToScreen(HorizStretch(56.0f), VertiStretch(v45), -52);
 			if (index == a1->field_9C && a1->field_A4)
 			{
 				njRotateY(0, a1->field_A4);
@@ -709,10 +765,10 @@ void __cdecl Preview1(BlackMarketData* a1)
 			}
 			else
 			{
-				//njSetZCompare(3u);
-				njCnkDrawObject(ChaoItemModels[item->Type]);
-				//npSetZCompare();
-				njPopMatrixEx();
+				njSetZCompare(3u);
+				njCnkDrawObject(ChaoItemModels_[item->Type]);
+				npSetZCompare();
+				//njPopMatrixEx();
 			}
 			break;
 
@@ -720,20 +776,22 @@ void __cdecl Preview1(BlackMarketData* a1)
 			break;
 		}
 		item = &BlackMarketInventory[++index];
+		njPopMatrixEx();
 	}
-	njPopMatrixEx();
+
 
 }
 void __cdecl Preview2(BlackMarketData* a1)
 {
 	njPushMatrixEx();
 
-	njUnitMatrix(0);
-	int type = a1->field_51;
-	switch (a1->gap50)
+	//njUnitMatrix(0);
+	int type = *(char*)((int)a1 + 0x5D);
+	float field_90 = *(float*)((int)a1 + 0x9C);
+	switch (*(char*)((int)a1 + 0x5C))
 	{
 	case ChaoItemCategory_Accessory:
-		ProjectToScreen(390.0f, 212.0f, -26.0f / a1->field_90);
+		ProjectToScreen(HorizStretch(390.0f), VertiStretch2(212.0f), -26.0f / field_90);
 		if (a1->field_88)
 		{
 			njRotateX(0, a1->field_88);
@@ -749,10 +807,11 @@ void __cdecl Preview2(BlackMarketData* a1)
 
 		njSetTexture(Accessories[type].second);
 		njCnkDrawObject(Accessories[type].first);
-		
+
 		break;
 	case ChaoItemCategory_Egg:
-		ProjectToScreen(390.0, 212.0, -34.0 / a1->field_90);
+		ProjectToScreen(HorizStretch(390.0), VertiStretch2(212.0), -34.0 / field_90);
+		njScale(0, 1.0 / HorizontalStretch, 1.0 / HorizontalStretch, 1.0 / HorizontalStretch);
 		if (a1->field_88)
 		{
 			njRotateX(0, a1->field_88);
@@ -762,12 +821,12 @@ void __cdecl Preview2(BlackMarketData* a1)
 			njRotateY(0, a1->field_8C);
 		}
 		njTranslate(0, 0.0, -2.8, 0.0);
-		njSetTexture((NJS_TEXLIST*)0x013669FC);
+		njSetTexture(ChaoTexLists);
 		chRareEggDrawModel((NJS_CNK_MODEL*)0x3601B7C, type);
 		break;
 	case 2:
-		ProjectToScreen(390.0, 212.0, -26.0 / a1->field_90);
-		njScale(0, 1.0, 1.0, *(float*)0x173B43C);
+		ProjectToScreen(HorizStretch(390.0), VertiStretch2(212.0), -26.0 / field_90);
+		njScale(0, 1.0 / HorizontalStretch, 1.0 / HorizontalStretch, 1.0 / HorizontalStretch);
 		if (a1->field_88)
 		{
 			njRotateX(0, a1->field_88);
@@ -776,7 +835,7 @@ void __cdecl Preview2(BlackMarketData* a1)
 		{
 			njRotateY(0, a1->field_8C);
 		}
-	
+
 		{
 			njScale(0, 1.2, 1.2, 1.2);
 			njSetTexture((NJS_TEXLIST*)0x171A294);
@@ -790,8 +849,8 @@ void __cdecl Preview2(BlackMarketData* a1)
 
 		break;
 	case ChaoItemCategory_Fruit:
-		ProjectToScreen(390.0, 212.0, -22.0 / a1->field_90);
-		njScale(0, 1.0, 1.0, *(float*)0x173B43C);
+		ProjectToScreen(HorizStretch(390.0), VertiStretch2(212.0), -22.0 / field_90);
+		njScale(0, 1.0 / HorizontalStretch, 1.0 / HorizontalStretch, 1.0 / HorizontalStretch);
 		if (a1->field_88)
 		{
 			njRotateX(0, a1->field_88);
@@ -803,10 +862,12 @@ void __cdecl Preview2(BlackMarketData* a1)
 		njTranslate(0, 0.0, -0.4f, 0.0);
 		//njSetTexture(FruitObjects[type].first);
 		//DrawCnkModel(FruitObjects[type].second->chunkmodel);
+		njSetTexture(&AL_OBJECT_TEXLIST);
+		njCnkDrawObject(ChaoFruitModels_[type]);
 		break;
 	case ChaoItemCategory_Seed:
-		ProjectToScreen(390.0, 212.0, -11.0 / a1->field_90);
-		njScale(0, 1.0, 1.0, *(float*)0x173B43C);
+		ProjectToScreen(HorizStretch(390.0), VertiStretch(212.0), -11.0 / field_90);
+		njScale(0, 1.0 / HorizontalStretch, 1.0 / HorizontalStretch, 1.0 / HorizontalStretch);
 		if (a1->field_88)
 		{
 			njRotateX(0, a1->field_88);
@@ -822,7 +883,7 @@ void __cdecl Preview2(BlackMarketData* a1)
 	case ChaoItemCategory_Hat:
 		if (type >= 16 && type <= 84)
 		{
-			ProjectToScreen(390.0f, 212.0f, -26.0f / a1->field_90);
+			ProjectToScreen(390.0f, 212.0f, -26.0f / field_90);
 			if (a1->field_88)
 			{
 				njRotateX(0, a1->field_88);
@@ -838,9 +899,9 @@ void __cdecl Preview2(BlackMarketData* a1)
 		else
 		{
 			if (type == 15)
-				ProjectToScreen(390.0f, 212.0f, -13.0f / a1->field_90);
+				ProjectToScreen(390.0f, 212.0f, -13.0f / field_90);
 			else
-				ProjectToScreen(390.0f, 212.0f, -26.0f / a1->field_90);
+				ProjectToScreen(390.0f, 212.0f, -26.0f / field_90);
 
 			if (a1->field_88)
 			{
@@ -886,7 +947,7 @@ void __cdecl Preview2(BlackMarketData* a1)
 				//njCnkDrawObject(MaskObjObjectList[type - 85].first);
 			}
 			else
-				njCnkDrawObject(ChaoItemModels[type]);
+				njCnkDrawObject(ChaoItemModels_[type]);
 		}
 		break;
 
@@ -894,15 +955,16 @@ void __cdecl Preview2(BlackMarketData* a1)
 		break;
 	}
 
-	njPopMatrixEx();
+	//njPopMatrixEx();
 
 	//DoLighting(LightIndexBackupMaybe);
 }
 const int JumpBackHere = 0x007277ED;
 int backupesi;
+int backupedi;
 void __declspec(naked) Preview1Hook()
 {
-	
+
 	_asm
 	{
 		mov backupesi, esi
@@ -913,14 +975,16 @@ void __declspec(naked) Preview1Hook()
 		jmp JumpBackHere
 	}
 }
-const int JumpBackHere_ = 0x005897C3;
+const int JumpBackHere_ = 0x007264DF;
 void __declspec(naked) Preview2Hook()
 {
 	_asm
 	{
-		push[esp + 0x2C]
+		mov backupedi, edi
+		push edi
 		call Preview2
 		add esp, 4
+		mov edi, backupedi
 		jmp JumpBackHere_
 	}
 }
@@ -940,7 +1004,7 @@ void al_kinder_bm_Init()
 
 		BMFruit[i].Name = 106 + (i - 13);
 		BMFruit[i].Description = 106 + (i - 13);
-		BMFruit[i].PurchasePrice = 350;	
+		BMFruit[i].PurchasePrice = 350;
 		BMFruit[i].SalePrice = 75;
 		BMFruit[i].RequiredEmblems = 0;
 	}
@@ -956,7 +1020,7 @@ void al_kinder_bm_Init()
 	//WriteData((char*)0x726D3D, (char)(GeneralFruitMarket.size() * 2));
 
 	WriteJump((void*)0x0072731B, Preview1Hook);
-	//WriteJump((void*)0x005891E8, Preview2Hook);
+	WriteJump((void*)0x00725D18, Preview2Hook);
 
 	//accessory
 	WriteJump((void*)0x717650, sub_717650);
