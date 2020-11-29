@@ -253,6 +253,7 @@
     <None Include="data\accessory\ala_glasses_square.nja" />
     <None Include="data\accessory\ala_headphones.nja" />
     <None Include="data\cwe\object_common_cnk\alo_mannequin.nja" />
+    <None Include="data\cwe\object_common_cnk\alo_missing.nja" />
     <None Include="data\motion\alm_crayonfix.nam" />
     <None Include="data\toy\alm_box.njm" />
     <None Include="data\toy\object_al_toy_box.nja" />

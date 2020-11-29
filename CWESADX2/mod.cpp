@@ -16,6 +16,7 @@
 #include "data/accessory/ala_baseballcap.nja"
 #include "data/accessory/ala_glasses_aviators.nja"
 #include "data/accessory/ala_headphones.nja"
+#include "data/cwe/object_common_cnk/alo_missing.nja"
 #include "AL_ModAPI.h"
 
 extern "C"
@@ -236,6 +237,15 @@ extern "C"
 		RegisterChaoAccessory(EAccessoryType::Face, &object_ala_glasses_aviators, &CWE_OBJECT_TEXLIST, &aviators, "Aviators", "Glasses for high flyers.");
 		RegisterChaoAccessory(EAccessoryType::Head, &headphone_cups, &CWE_OBJECT_TEXLIST, &headphones, "Headphones", "Music makes you lose control.");
 		PrintDebug("%d count \n", BlackMarketCategories[ChaoItemCategory_Accessory].Count++);
+
+		CallRegisteredHooks();
+
+		for (int i = 0; i < 50; i++)
+		{
+			BlackMarketItemAttributes missingattrib = { ACCESSORYRINGS,500,0,-1,-1,0 };
+			RegisterChaoAccessory(EAccessoryType::Head, &object_alo_missing, &CWE_OBJECT_TEXLIST, 0, "Missing Item", "Missing Item");
+			//RegisterChaoHat(&object_alo_missing, &CWE_OBJECT_TEXLIST, 0, "Missing Item", "Missing Item", true);
+		}
 		AL_ModAPI_UpdatePtr();
 	}
 

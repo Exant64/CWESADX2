@@ -269,5 +269,6 @@
     <None Include="data\accessory\ala_glasses_aviators.nja" />
     <None Include="data\accessory\ala_glasses_round.nja" />
     <None Include="data\accessory\ala_glasses_square.nja" />
+    <None Include="data\cwe\object_common_cnk\alo_missing.nja" />
   </ItemGroup>
 </Project>
