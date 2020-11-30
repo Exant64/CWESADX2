@@ -6,6 +6,7 @@
 #include "alo_piano.h"
 #include "alo_ball.h"
 #include "..//chao.h"
+#include "../al_toypresenter.h"
 //#include "../SeedGameObject.h"
 
 extern ObjectMaster* PlaceConsole(NJS_VECTOR* pos);
@@ -13,7 +14,7 @@ extern void ALO_BoxExecutor_Load(NJS_VECTOR* a1);
 
 void LoadSSGardenNew()
 {
-	//ToyPresenter_Load();
+	//ToyPresenter_Load(0,0);
 //	LoadClassRoom();
 	NJS_VECTOR pos = { -52.5f ,0,-120.5f };
 	LoadSSGarden();
@@ -86,7 +87,7 @@ void RaceUnlocks(ChaoSetmedalThing* a1)
 		int v1 = sub_7512D0((int)& a1->gap0[5312], 0);
 		ChaoSetmedalThing2* v3 = (ChaoSetmedalThing2*)sub_74F740((int)& a1->gap0[244 * v1 + 3264]);
 		chaowk* data1 = (chaowk*)v3->dword8D0->Data1;
-		//ToyPresenter_Load(CurrentChaoRace);
+		ToyPresenter_Load(CurrentChaoRaceType, CurrentChaoRace);
 		if (CurrentChaoRaceType == 0)
 		{
 			switch (CurrentChaoRace)

@@ -163,6 +163,7 @@
     <ClInclude Include="al_knowledge.h" />
     <ClInclude Include="AL_ModAPI.h" />
     <ClInclude Include="al_sound.h" />
+    <ClInclude Include="al_toypresenter.h" />
     <ClInclude Include="al_toy\alo_ball.h" />
     <ClInclude Include="al_toy\alo_console.h" />
     <ClInclude Include="al_toy\alo_horse.h" />
@@ -216,6 +217,7 @@
     <ClCompile Include="al_knowledge.cpp" />
     <ClCompile Include="AL_ModAPI.cpp" />
     <ClCompile Include="al_sound.cpp" />
+    <ClCompile Include="al_toypresenter.cpp" />
     <ClCompile Include="al_toy\alo_ball.cpp" />
     <ClCompile Include="al_toy\alo_boat.cpp" />
     <ClCompile Include="al_toy\alo_box.cpp" />

@@ -1422,7 +1422,7 @@ void DrawChaoNew(ObjectMaster* a1, ChunkObjectPointer* chunkObjectPointer)
 		Chao_NodeIndex++;
 		if (chunkObjectPointer->base.child)
 		{
-			DrawChao(a1, (ChunkObjectPointer*)chunkObjectPointer->base.child);
+			DrawChaoNew(a1, (ChunkObjectPointer*)chunkObjectPointer->base.child);
 		}
 		njPopMatrixEx();
 		if (!chunkObjectPointer->base.sibling)
@@ -1449,6 +1449,9 @@ void Chao_Init()
 	//sound restoration, todo restore particles
 	WriteJump(ALBHV_HungryDada, ALBHV_HungryDada_);
 	WriteJump(ALBHV_Cry, ALBHV_Cry_);
+
+	WriteData((int*)0x007207F9, (int)sizeof(ChaoDataBase));
+	WriteData((int*)0x0072082F, (int)sizeof(ChaoDataBase));
 
 	//console restoration 
 	//WriteJump(ALBHV_GoToTV, ALBHV_GoToBoat);

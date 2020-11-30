@@ -159,6 +159,9 @@
     <ClInclude Include="alo_fruit.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="al_toypresenter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -255,6 +258,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="alo_fruit.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="al_toypresenter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
