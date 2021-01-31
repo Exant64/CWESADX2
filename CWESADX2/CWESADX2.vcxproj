@@ -174,12 +174,7 @@
     <ClInclude Include="AnimationFile.h" />
     <ClInclude Include="ChaoMain.h" />
     <ClInclude Include="d3d8types.h" />
-    <ClInclude Include="data\DrumDC.h" />
-    <ClInclude Include="data\DrumStickDC.h" />
-    <ClInclude Include="data\Flower1.h" />
-    <ClInclude Include="data\Flower2.h" />
     <ClInclude Include="data\mixColorTable.h" />
-    <ClInclude Include="data\TrumpetToy.h" />
     <ClInclude Include="eff\eff_tears.h" />
     <ClInclude Include="FileSystem.h" />
     <ClInclude Include="framework.h" />
@@ -236,6 +231,7 @@
     <ClCompile Include="FileSystem.cpp" />
     <ClCompile Include="IniFile.cpp" />
     <ClCompile Include="LandTableInfo.cpp" />
+    <ClCompile Include="ls_edit.cpp" />
     <ClCompile Include="mod.cpp" />
     <ClCompile Include="ModelInfo.cpp" />
     <ClCompile Include="pch.cpp">

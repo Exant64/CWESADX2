@@ -272,17 +272,6 @@ void ThinkControllerHook(ObjectMaster* a1, float* a2)
 		AL_SetBehavior(a1, FartReaction);
 		*a2 = 1;
 	}
-	AL_EmotionAdd(a1, EMOTION_ENUM::EM_ST_BREED, 10000);
-	if (GetChaoObject(0, 0) == a1)
-	{
-		data1->pParamGC->DNA.Color1 = SADXRetailColour_Red;
-		data1->pParamGC->DNA.Color2 = SADXRetailColour_Red;
-	}
-	if (GetChaoObject(0, 1) == a1)
-	{
-		data1->pParamGC->DNA.Color1 = SADXRetailColour_Grey;
-		data1->pParamGC->DNA.Color2 = SADXRetailColour_Grey;
-	}
 	//if(sub_563B70(a1)) *a2 = 1;
 	//AL_CalcIntention_Illness(a1, a2);
 	AL_CalcIntentionScore_Fear(a1, a2);
@@ -1450,6 +1439,7 @@ void Chao_Init()
 	WriteJump(ALBHV_HungryDada, ALBHV_HungryDada_);
 	WriteJump(ALBHV_Cry, ALBHV_Cry_);
 
+	//sizeof 
 	WriteData((int*)0x007207F9, (int)sizeof(ChaoDataBase));
 	WriteData((int*)0x0072082F, (int)sizeof(ChaoDataBase));
 

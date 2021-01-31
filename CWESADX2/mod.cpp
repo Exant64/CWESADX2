@@ -267,7 +267,7 @@ extern "C"
 		const IniFile* config = new IniFile(std::string(path) + "\\config.ini");
 
 		PrintDebug("sizeof(ChaoData) = %d \n", sizeof(ChaoData));
-
+		
 		//transporter fix
 		DataPointer(NJS_MODEL_SADX, transporterTest, 0x33CFC44);
 		for (int i = 0; i < transporterTest.nbMeshset; i++)

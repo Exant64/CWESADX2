@@ -11,7 +11,6 @@
 
 extern ObjectMaster* PlaceConsole(NJS_VECTOR* pos);
 extern void ALO_BoxExecutor_Load(NJS_VECTOR* a1);
-
 void LoadSSGardenNew()
 {
 	//ToyPresenter_Load(0,0);
@@ -24,7 +23,6 @@ void LoadSSGardenNew()
 	NJS_VECTOR ballPos = { 24,0,10 };
 	NJS_VECTOR boxPos = { 177,1.75f,13 };
 	NJS_VECTOR boxDCPos = { 189, 3, -15.5f };
-	
 
 	//ToysUnlocked = -1; //debug
 	if (ToysUnlocked & 1)
