@@ -988,14 +988,14 @@ void __declspec(naked) Preview2Hook()
 		jmp JumpBackHere_
 	}
 }
+
 void al_kinder_bm_Init()
 {
 	for (int i = 0; i < 4; i++)
 	{
 		GeneralFruitMarket.push_back(GeneralFruitChances[i]);
 	}
-	WriteJump((void*)0x00728A54, (void*)0x728CFD);
-
+	//WriteJump((void*)0x00728A54, (void*)0x728CFD);
 	//gba fruit
 	for (int i = 13; i < 20; i++)
 	{
@@ -1010,10 +1010,10 @@ void al_kinder_bm_Init()
 	}
 
 	//TEMP PATCH
-	WriteData<2>((char*)0x007284BF, (char)0x90);
+	//WriteData<2>((char*)0x007284BF, (char)0x90);
 
 	WriteJump((void*)0x0726B80, FBuyListUpdate);
-	WriteJump((void*)0x721AD0, sub_721AD0); //debug
+	//WriteJump((void*)0x721AD0, sub_721AD0); //debug
 	//general fruit
 	//WriteData((int*)0x00726D1E, (int)(&GeneralFruitMarket.data()->chance));
 	//WriteData((int*)0x00726D29, (int)GeneralFruitMarket.data());

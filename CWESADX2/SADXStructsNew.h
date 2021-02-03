@@ -989,12 +989,12 @@ struct al_object
 	void* DisplayList;
 };
 
-struct AL_FACE_CTRL
+struct __declspec(align(4)) AL_FACE_CTRL
 {
 	int EyeTimer;
 	__int16 EyeColorNum;
 	__int16 EyeCurrNum;
-	__int16 EyeDefaultNum;
+	int EyeDefaultNum;
 	int MouthTimer;
 	__int16 MouthCurrNum;
 	__int16 MouthDefaultNum;

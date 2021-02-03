@@ -10,6 +10,7 @@
 //#include "albhv/albhv_ball.h"
 #include "al_knowledge.h"
 #include "alo_accessory.h"
+#include "ChaoMain.h"
 
 FunctionPointer(void, SetChunkColor, (int a1), 0x0078A320);
 FunctionPointer(void, ApplyWSwitch, (int a1), 0x00717470);
@@ -460,8 +461,12 @@ void __cdecl ChaoColoring_(int texture, int color, int shiny, int highlights, NJ
 		goto LABEL_7;
 	}
 }
-
-void __cdecl chSetRareMaterial_(int texture, int color, int shiny, int highlights, NJS_CNK_MODEL* model, int mixColor1, int mixColor2)
+void __cdecl Direct3D_SetTextureToStagePatch()
+{
+	//stSetTexture
+	//Direct3D_SetTextureNum(ChunkTextureIndexB);
+}
+void __cdecl chSetRareMaterial_(int texture, int color, int shiny, int highlights, NJS_CNK_MODEL* model)
 {
 	int flag; // esi
 	unsigned __int16 v6; // ax
@@ -471,6 +476,25 @@ void __cdecl chSetRareMaterial_(int texture, int color, int shiny, int highlight
 	flag = 0;
 	if (model)
 	{
+		if (shiny && !highlights)
+		{
+			flag = 2;
+			flag |= DontUseTexture;
+			
+			if (color > 0 && !texture)
+			{
+				flag |= UseChunkObjectColor;
+				SetChunkColor(((int*)0x0389D828)[color - 1]);
+			}
+			else
+				SetChunkColor(-1);
+			//SetChunkTextureIndexA(141);
+			EnableChunkMaterialFlags();
+			SetChunkMaterialFlags(flag);
+			SetChunkTextureIndexB(GetChunkTextureIndex(model));
+			//ChunkTextureFlip(0);
+			return;
+		}
 		if (shiny)
 		{
 			flag = 6;
@@ -520,16 +544,7 @@ void __cdecl chSetRareMaterial_(int texture, int color, int shiny, int highlight
 		noTexture = texture == 0;
 		goto LABEL_7;
 	}
-	if (mixColor1 != 0 && mixColor2 != 0)
-	{
-		NJS_COLOR* colorsNJ = (NJS_COLOR*)0x0389D828;
-		NJS_COLOR resultMixed;
-		resultMixed.argb.b = (Uint8)(colorsNJ[mixColor1].argb.b * 0.5f + colorsNJ[mixColor2].argb.b * (1 - 0.5f));
-		resultMixed.argb.r = (Uint8)(colorsNJ[mixColor1].argb.r * 0.5f + colorsNJ[mixColor2].argb.r * (1 - 0.5f));
-		resultMixed.argb.g = (Uint8)(colorsNJ[mixColor1].argb.g * 0.5f + colorsNJ[mixColor2].argb.g * (1 - 0.5f));
-		resultMixed.argb.a = (Uint8)(colorsNJ[mixColor1].argb.a * 0.5f + colorsNJ[mixColor2].argb.a * (1 - 0.5f));
-		SetChunkColor(resultMixed.color);
-	}
+	
 }
 
 void AL_CalcParameter_Condition(ObjectMaster* a1, EMOTION_ENUM a2, int a3)
@@ -1083,7 +1098,7 @@ FunctionPointer(void, chRareEggDrawModel, (NJS_CNK_MODEL* a1, int a2), 0x0078AF1
 FunctionPointer(void, AL_CalcMotionMartix, (ChunkObjectPointer* a1), 0x00765010);
 FunctionPointer(void, ChaoColoring, (int texture, int color, int shiny, int highlights, NJS_CNK_MODEL* model), 0x0078AE30);
 
-unsigned char DCWings = 0x90;
+unsigned char DCWings = 0x0;//0x90;
 unsigned char CharacterIndex = 0x14;
 void DrawChaoNew(ObjectMaster* a1, ChunkObjectPointer* chunkObjectPointer)
 {
@@ -1259,6 +1274,7 @@ void DrawChaoNew(ObjectMaster* a1, ChunkObjectPointer* chunkObjectPointer)
 
 					goto LABEL_97;
 				}
+				goto LABEL_98;
 			}
 		}
 		else if (Chao_NodeIndex == 1)
@@ -1443,9 +1459,16 @@ void Chao_Init()
 	WriteData((int*)0x007207F9, (int)sizeof(ChaoDataBase));
 	WriteData((int*)0x0072082F, (int)sizeof(ChaoDataBase));
 
+	if (UseBrightChao) 
+	{
+		WriteJump(ChaoColoring, chSetRareMaterial_);
+		WriteCall((void*)0x0078A70B, (void*)0x796020);
+		WriteCall((void*)0x0078A69F, Direct3D_SetTextureToStagePatch);
+		WriteData((char*)0x0078A57B, (char)(SecondTextureEnvironmentMap));
+	}
 	//console restoration 
 	//WriteJump(ALBHV_GoToTV, ALBHV_GoToBoat);
-
+	
 	//temp debug hanabi
 	//WriteJump(ALBHV_Think, ALBHV_Eda);
 	//WriteJump(ALBHV_Think, ALBHV_GoToBoat);

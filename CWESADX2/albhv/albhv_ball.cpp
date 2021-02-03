@@ -143,17 +143,19 @@ signed int sub_563B70(ObjectMaster* a1)
 	chaowk* v1; // eax
 	ChaoDataBase* v2; // esi
 	int v3; // eax
-
+	int retval = 0;
+	if (AL_CheckWhistle(a1))
+		retval = 1;
 	if (!BallUsable)
 	{
-		return AL_CheckWhistle(a1);
+		return retval;
 	}
 	v1 = (chaowk*)a1->Data1;
 	v2 = v1->pParamGC;
 	if (AL_EmotionGetValue(a1, EM_ST_TEDIOUS) <= 4000u
 		|| CheckDistance(&v1->entity.Position, &ALO_BallPtr->Data1->Position) >= 50.0)
 	{
-		return AL_CheckWhistle(a1);
+		return retval;
 	}
 	AL_EmotionAdd(a1, EM_ST_TEDIOUS, -2000);
 	AL_SetBehavior(a1, sub_563830);

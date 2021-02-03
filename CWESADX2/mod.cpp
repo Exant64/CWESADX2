@@ -34,8 +34,6 @@ extern "C"
 	FunctionPointer(void, ColorChunkModel, (int a1), 0x78A320);
 	void __cdecl EggColoring(NJS_CNK_MODEL* a1, int a2)
 	{
-		int v4; // ecx@6
-		DataArray(int, off_389D780, 0x389D780, 4);
 		DataArray(int, off_389D7B8, 0x389D7B8, 4);
 		DataArray(int, dword_389D7B8, 0x389D7B8, 6);
 		DataPointer(D3DMATRIX, stru_389D7E8, 0x0389D7E8);
@@ -106,8 +104,10 @@ extern "C"
 			EnableChunkMaterialFlags();
 			SetChunkMaterialFlags(15u);
 			Direct3D_SetTexList(ChaoTexLists);
-			v4 = dword_389D828[a2 - SADXEggColour_YellowShiny_MonoTone];
-			goto LABEL_8;
+			ColorChunkModel(dword_389D828[a2 - SADXEggColour_YellowShiny_MonoTone]);
+			SetChunkTextureIndexA(GetChunkTextureIndex(a1));
+			SetChunkTextureIndexB(0x22u);
+			break;
 		case SADXEggColour_YellowShiny_TwoTone:
 		case SADXEggColour_WhiteShiny_TwoTone:
 		case SADXEggColour_BrownShiny_TwoTone:
@@ -124,9 +124,8 @@ extern "C"
 			EnableChunkMaterialFlags();
 			SetChunkMaterialFlags(0xEu);
 			Direct3D_SetTexList(ChaoTexLists);
-			v4 = off_389D780[a2 + 1];
 		LABEL_8:
-			ColorChunkModel((int)v4);
+			ColorChunkModel(dword_389D828[a2 - SADXEggColour_YellowShiny_TwoTone]);
 			SetChunkTextureIndexA(GetChunkTextureIndex(a1));
 			SetChunkTextureIndexB(0x22u);
 			break;
@@ -168,8 +167,7 @@ extern "C"
 			EnableChunkMaterialFlags();
 			SetChunkMaterialFlags(0xEu);
 			Direct3D_SetTexList(ChaoTexLists);
-			v4 = dword_088A3D8[a2 - SADXEggColour_Glass];
-			ColorChunkModel((int)v4);
+			ColorChunkModel((int)dword_088A3D8[a2 - SADXEggColour_Glass]);
 			SetChunkTextureIndexA(GetChunkTextureIndex(a1));
 			SetChunkTextureIndexB(0x22u);
 		default:
@@ -208,7 +206,6 @@ extern "C"
 		memcpy(&FatherGene, &wk2->pParamGC->DNA, sizeof(ChaoDNA));
 
 		AL_BlendGene(&MotherGene, &FatherGene, pChildGene);
-		PrintDebug("%d %d \n", pChildGene->Color1, pChildGene->Color2);
 		for (int i = 0; i < 210; i++)
 		{
 			if (pChildGene->Color1 == mixColorTable[i].color1 && pChildGene->Color2 == mixColorTable[i].color2)
@@ -260,12 +257,390 @@ extern "C"
 			CWE_Loaded = 1;
 		}
 	}
+	struct WIDELINE_TEXDATA
+	{
+		int index;
+		NJS_COLOR pColor[2];
+		float uv1;
+		float uv2;
+		float uv3;
+		float uv4;
+		float uv5;
+		float uv6;
+		float uv7;
+		float uv8;
+	};
+	struct LinePosition
+	{
+		NJS_POINT3 Pos[2];
+		float fWidth[2];
+	};
 
+	const int sub_7A6790Ptr = 0x7A6790;
+	void sub_7A6790(float* a1, WIDELINE_TEXDATA* a2, NJS_POINT3* a3)
+	{
+		__asm
+		{
+			mov esi, a3
+			mov edi, a2
+			mov ebx, a1
+			call sub_7A6790Ptr
+		}
+	}
+	/*
+	int FUN_8c044d00(int param_1, int param_2, int* param_3)
+
+	{
+		int uVar1;
+		int* puVar2;
+		int iVar3;
+		int in_fr0;
+
+		if ((DAT_8c88f610 <= *(float*)(param_2 + 8)) || (DAT_8c88f610 <= *(float*)(param_2 + 0x14))) {
+			puVar2 = param_3 + 1;
+			iVar3 = param_2 + 0xc;
+			if (DAT_8c88f610 <= *(float*)(param_2 + 8)) {
+				if (DAT_8c88f610 <= *(float*)(param_2 + 0x14)) {
+					*(int*)(param_1 + 0x18) = *param_3;
+					*(int*)(param_1 + 0x1c) = *puVar2;
+				}
+				else {
+					*(int*)(param_1 + 0x18) = *param_3;
+					FUN_8c044cac(iVar3, param_2, *puVar2, *param_3);
+					*(int*)(param_1 + 0x1c) = in_fr0;
+				}
+			}
+			else {
+				FUN_8c044cac(param_2, iVar3, *param_3, *puVar2);
+				*(int*)(param_1 + 0x18) = in_fr0;
+				*(int*)(param_1 + 0x1c) = *puVar2;
+			}
+			FUN_8c085f14(param_2, param_1);
+			FUN_8c085f14(iVar3, param_1 + 0xc);
+			uVar1 = 1;
+		}
+		else {
+			uVar1 = 0;
+		}
+		return uVar1;
+	}
+	*/
+
+	const int sub_7A6520Ptr = 0x7A6520;
+	void sub_7A6520(LinePosition* a1, float* a2, NJS_VECTOR* a3)
+	{
+		//int retval;
+		__asm
+		{
+			mov ebx, a1
+			mov edi, a2
+			mov esi, a3
+			call sub_7A6520Ptr
+			//mov retval, eax
+		}
+	}
+
+	void FUN_8c044cac(float* param_1, float* param_2)
+
+	{
+		float fVar1;
+
+		if (param_1[2] == param_2[2]) {
+			return;
+		}
+		fVar1 = (MinDrawDistance - param_1[2]) / (param_2[2] - param_1[2]);
+		param_1[2] = MinDrawDistance;
+		*param_1 = fVar1 * (*param_2 - *param_1) + *param_1;
+		param_1[1] = fVar1 * (param_2[1] - param_1[1]) + param_1[1];
+		return;
+	}
+
+	void FUN_8c085f14(float* param_1, float* param_2)
+
+	{
+		float fVar1;
+		float fVar2;
+
+		fVar2 = _nj_screen_.dist;
+		fVar1 = param_1[2];
+		//*(float*)(param_2 + 8) = fVar1;
+		fVar2 = fVar2 / fVar1;
+		fVar1 = *param_1;
+		*(float*)(param_2 + 4) = 1 * fVar2 * param_1[1];
+		*(float*)(param_2 + 0) = 1 * fVar2 * fVar1;
+		
+		return;
+	}
+
+	void FUN_8c0450a0(float* param_1, int param_2, float* param_3)
+
+	{
+		int iVar1;
+		int iVar2;
+		float* pfVar3;
+		int iVar4;
+		int iVar5;
+		float in_fr0;
+		float fVar6;
+		float fVar7;
+		float fVar8;
+		NJS_VECTOR NStack164;
+		float afStack152[2];
+		float fStack144;
+		float afStack140[24];
+		float local_2c[4];
+
+		if (!MissedFrames) {
+			in_fr0 = atan2f(param_1[4] - param_1[1], param_1[3] - *param_1);
+			afStack152[0] = in_fr0 * 10430.38;
+			pfVar3 = param_1 + 6;
+			fVar6 = 1.0;
+			iVar4 = 0;
+			iVar5 = 0;
+			fVar8 = 320.0;
+			fVar7 = 240.0;
+			if (param_1 < pfVar3) {
+				do {
+					fStack144 = param_1[2];
+					FUN_8c085f14(afStack152, &NStack164.x);
+					NStack164.x = NStack164.x * *(float*)(param_2 + iVar5);
+					NStack164.y = NStack164.y * *(float*)(param_2 + iVar5);
+					afStack140[iVar4 * 6] = (*param_1 - NStack164.x) + fVar8;
+					iVar2 = iVar4 + 1;
+					afStack140[iVar4 * 6 + 1] = param_1[1] + NStack164.y + fVar7;
+					afStack140[iVar4 * 6 + 2] = fVar6 / param_1[2];
+					afStack140[iVar4 * 6 + 5] = *(float*)((int)param_3 + iVar5 + 4);
+					afStack140[iVar2 * 6] = *param_1 + NStack164.x + fVar8;
+					afStack140[iVar2 * 6 + 1] = (param_1[1] - NStack164.y) + fVar7;
+					iVar1 = iVar4 * 6;
+					param_1 = param_1 + 3;
+					iVar4 = iVar4 + 2;
+					afStack140[iVar2 * 6 + 2] = afStack140[iVar1 + 2];
+					afStack140[iVar2 * 6 + 5] = *(float*)((int)param_3 + iVar5 + 4);
+					iVar5 = iVar5 + 4;
+				} while (param_1 < pfVar3);
+			}
+			iVar4 = 0;
+			pfVar3 = afStack140;
+			while (pfVar3 < local_2c) {
+				pfVar3[3] = *(float*)((int)param_3 + iVar4 + 0xc);
+				pfVar3[4] = *(float*)((int)param_3 + iVar4 + 0x10);
+				pfVar3[9] = *(float*)((int)param_3 + iVar4 + 0x14);
+				pfVar3[10] = *(float*)((int)param_3 + iVar4 + 0x18);
+				pfVar3 = pfVar3 + 0xc;
+				iVar4 = iVar4 + 0x10;
+			}
+			njDrawTextureMemList((NJS_TEXTURE_VTX*)afStack140, 4, *param_3, 1);
+		}
+		return;
+	}
+
+
+
+
+	int FUN_8c044dca(LinePosition* param_1, NJS_VECTOR* param_2, Rotation3* param_3, float* param_4, float param_5)
+
+	{
+		NJS_VECTOR fStack64;
+		NJS_VECTOR uStack52;
+		NJS_VECTOR auStack40[2];
+		//NJS_VECTOR auStack28;
+
+		njPushMatrix(_nj_unit_matrix_);
+		uStack52.y = 0.0;
+		uStack52.x = 0.0;
+		uStack52.z = -param_5;
+		if (param_3->y != 0) {
+			njRotateY(0, param_3->y);
+		}
+		if (param_3->x != 0) {
+			njRotateX(0, param_3->x);
+		}
+		njCalcPoint(0, &uStack52, &fStack64);
+		njPopMatrix(1);
+		fStack64.x = param_2->x + fStack64.x;
+		fStack64.y = param_2->y + fStack64.y;
+		fStack64.z = param_2->z + fStack64.z;
+		njCalcPoint(0, param_2, &auStack40[0]);
+		njCalcPoint(0, &fStack64, &auStack40[1]);
+		sub_7A6520(param_1, param_4, auStack40);
+		//param_1->Pos[0].x = auStack40[0].x;
+		//param_1->Pos[0].y = auStack40[0].y;
+		//param_1->Pos[1].x = auStack40[1].x;
+		//param_1->Pos[1].y = auStack40[1].y;
+		FUN_8c085f14(&auStack40[0].x, &param_1->Pos[0].x);
+		FUN_8c085f14(&auStack40[1].x, &param_1->Pos[1].x);
+		return 1;
+	
+	}
+
+	FunctionPointer(void, DrawWideLine3D, (NJS_POINT3* pPos, Rotation3* pAng, float* pWidthTable, int* pColor, float fLength),0x007A65E0);
+	void __cdecl DrawWideLineDC(NJS_VECTOR* param_1, Rotation3* param_2, float* param_3, WIDELINE_TEXDATA* param_4, float param_5)
+	{
+		int iVar1;
+		LinePosition auStack36;
+
+		iVar1 = FUN_8c044dca(&auStack36, param_1, param_2, param_3, param_5);
+		if (iVar1 == 1) {
+			//FUN_8c0450a0((float*)&auStack36, (int)auStack36.fWidth, (float*)param_4);
+			sub_7A6790(auStack36.fWidth, param_4, auStack36.Pos);
+		}
+	}
+	WIDELINE_TEXDATA texData = { 0x19A3A, {0xFFFFFFFF, 0xFFFFFFFF}, 1.0,1.0,1.0,0,0,1,0,0 };
+	float floats[2] = {0.15f, 3};
+	int colors[2] = { 0xFFFFFFFF, 0xFFFFFFFF };
+	FunctionPointer(void, sub_407A00,(NJS_MODEL_SADX* model, float scale), 0x407A00);
+	void OstandlightDisp(ObjectMaster* a1)
+	{
+		
+		chaowk* v1; // edi
+		Angle v2; // eax
+		NJS_OBJECT* v3; // esi
+
+		v1 = (chaowk*)a1->Data1;
+		if (!MissedFrames)
+		{
+			int iVar6 = (int)v1;
+			SetTextureToLevelObj();
+			njPushMatrix(0);
+			njTranslateV(0, &v1->entity.Position);
+			v2 = v1->entity.Rotation.y;
+			if (v2)
+			{
+				njRotateY(0, (unsigned __int16)v2);
+			}
+			sub_407A00((NJS_MODEL_SADX*)(*(int*)(iVar6 + 0xC)), 1.0);
+			njPopMatrix(1u);
+
+			njColorBlendingMode(0, 1);
+			njColorBlendingMode(1,10);
+
+			NJS_VECTOR vec = { 0.5f, 11.15f, 0 };
+			njAddVector(&vec, &v1->entity.Position);
+
+			
+			Rotation3 rot;
+			rot.z = *(int*)(iVar6 + 0x1c);
+			rot.y = (*(int*)(iVar6 + 0x18) + 0x800);
+			rot.x = (*(int*)(iVar6 + 0x14) + (0x38e - *(int*)(iVar6 + 8)));
+			floats[1] = *(float*)(iVar6 + 0x34);
+			DrawWideLineDC(&vec, &rot, floats, &texData, *(float*)(iVar6 + 0x30));
+			//DrawWideLine3D(&vec, &rot, floats, colors, *(float*)(iVar6 + 0x30));
+		}
+		/*
+		//There are two light beams in the model.
+	//At the moment I don't know how the game selects the one to use (if it uses both).
+	//So I just disable the vertices for the other beam.
+	//Entity Rotation X is beam X rotation 
+	//Entity Rotation Y is object Y rotation
+	//Entity Rotation Z is ???
+	//Entity Scale X is light+beam model Y rotation (in degrees)
+	//Entity Scale Y is beam length 
+	//Entity Scale Z is beam width
+		int v2; // eax@2
+		EntityData1* v1; // esi@1
+		v1 = a1->Data1;
+		//Stretch beam vertices
+		attach_01828538_2.points[19].z = (float)v1->Scale.y; //Beam length
+		attach_01828538_2.points[20].z = (float)v1->Scale.y; //Beam length
+		attach_01828538_2.points[19].x = (float)(-1.0f * v1->Scale.z); //Beam width
+		attach_01828538_2.points[20].x = (float)v1->Scale.z; //Beam width
+		//Disable the other beam
+		attach_01828538_2.points[23].x = 0;
+		attach_01828538_2.points[23].y = 0;
+		attach_01828538_2.points[23].z = 0;
+		attach_01828538_2.points[24].x = 0;
+		attach_01828538_2.points[24].y = 0;
+		attach_01828538_2.points[24].z = 0;
+		if (!MissedFrames)
+		{
+			SetTextureToLevelObj();
+			njPushMatrix(0);
+			njTranslateV(0, &v1->Position);
+			//Rotate the main object
+			v2 = v1->Rotation.y;
+			if (v2)
+			{
+				njRotateY(0, (unsigned __int16)v2);
+			}
+			//Render the main object model
+			sub_407A00(&attach_01828C4C, 1.0f);
+			//Render the light part without the beam
+			njTranslate(0, object_01828564.pos[0], object_01828564.pos[1], object_01828564.pos[2]);
+			njRotateXYZ(0, object_01828564.ang[0] + *(Sint32*)&v1->CharIndex, object_01828564.ang[1], object_01828564.ang[2]);
+			sub_4094D0(&attach_01828538, 4, 1.0f);
+			//Rotate and render the beam
+			njRotateX(0, v1->Rotation.x);
+			auto BaseRotation = atan2(Camera_Data1->Position.x - v1->Position.x, Camera_Data1->Position.y - v1->Position.y);
+			//This is hardcoded for now until I figure out how to rotate it properly
+			if (CurrentAct == 0 && CurrentCharacter != 5) njRotateZ(0, NJM_RAD_ANG(BaseRotation));
+			if (CurrentAct == 1) njRotateZ(0, NJM_RAD_ANG(-BaseRotation));
+			if (CurrentAct == 2 || CurrentCharacter == 5) njRotateZ(0, 16384);
+			sub_4094D0(&attach_01828538_2, 4, 1.0f);
+			njPopMatrix(1u);
+		}
+		*/
+	}
+	DataPointer(NJS_OBJECT, unk_1C28CA4, 0x1C28CA4);
+	void __cdecl OStandLight_(ObjectMaster* a1)
+	{
+		*(int*)&a1->Data1->CharIndex = (a1->Data1->Scale.x
+			* 65536.0
+			* 0.002777777777777778);
+		Collision_Init(a1, (CollisionData*)0x1AC4664, 1, 4u);
+		char* puVar1;
+		float fVar2;
+		char* puVar3;
+		int iVar4;
+		float* puVar5;
+		float* puVar6;
+		float uVar7;
+		int entityData1 = (int)a1->Data1;
+		
+		iVar4 = (int)malloc(0x28);
+		a1->Data1->Object = (NJS_OBJECT*)iVar4;
+		if (iVar4 != 0) {
+			puVar6 = *(float**)(entityData1 + 0xc);
+			puVar5 = (float*)unk_1C28CA4.model;
+			uVar7 = puVar5[1];
+			*puVar6 = *puVar5;
+			puVar6[1] = uVar7;
+			uVar7 = puVar5[3];
+			puVar6[2] = puVar5[2];
+			puVar6[3] = uVar7;
+			uVar7 = puVar5[5];
+			puVar6[4] = puVar5[4];
+			puVar6[5] = uVar7;
+			uVar7 = puVar5[7];
+			puVar6[6] = puVar5[6];
+			puVar6[7] = uVar7;
+			uVar7 = puVar5[9];
+			puVar6[8] = puVar5[8];
+			puVar6[9] = uVar7;
+			*(short*)(*(int*)(entityData1 + 0xc) + 0x14) =
+				*(short*)(*(int*)(entityData1 + 0xc) + 0x14) + -1;
+		}
+		
+		fVar2 = 0.099999994f;
+		//if (*(float*)(entityData1 + 0x30) < 0.099999994f) {
+			*(float*)(entityData1 + 0x30) = 28.0f;
+		//}
+		//if (*(float*)(entityData1 + 0x34) < fVar2) {
+			*(float*)(entityData1 + 0x34) = 3.0f;
+		//}
+		a1->MainSub = OStandLight_Main;
+		a1->DisplaySub = OStandLight_Display;
+		a1->DeleteSub = (ObjectFuncPtr)nullsub;
+		
+	}
+	
+	//Vector3, Vector3, float, float, int
 	DataArray(MotionTableAction, ChaoAnimations, 0x36A94E8, 625);
 	__declspec(dllexport) void Init(const char *path, const HelperFunctions* function)
 	{
 		const IniFile* config = new IniFile(std::string(path) + "\\config.ini");
-
+		//WriteJump(OStandLight, OStandLight_);
+		//WriteJump(OStandLight_Display, OstandlightDisp);
 		PrintDebug("sizeof(ChaoData) = %d \n", sizeof(ChaoData));
 		
 		//transporter fix
@@ -309,6 +684,8 @@ extern "C"
 			//WriteData((int*)0x0073704E, (int)AL_IconDrawSub_);
 		}
 
+		UseBrightChao = config->getBool("Chao World Extended", "BrightChao", false);
+
 		if (config->getBool("Chao World Extended", "ShinyJewelEgg", true))
 		{
 			shinyjewelegg = true;
@@ -322,7 +699,8 @@ extern "C"
 
 		if (config->getBool("Chao World Extended", "ColorMixing", true))
 		{
-			for (int i = 0; i < 1025; i += 4)
+			//different color formats
+			for (int i = 0; i < 1024; i += 4)
 			{
 				std::swap(patchedColors[i + 0], patchedColors[i + 2]);
 			}

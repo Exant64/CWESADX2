@@ -50,14 +50,17 @@ LABEL_8:
 FunctionPointer(signed int, AL_CheckMinimal, (ObjectMaster* a1), 0x00739D10);
 signed int sub_564760(ObjectMaster* a1)
 {
+	int retval = 0;
+	if (AL_CheckMinimal(a1))
+		retval = 1;
 	if (AL_GetBehavior(a1) == sub_5647B0)
 	{
-		return AL_CheckMinimal(a1);
+		return retval;
 	}
 	ObjectMaster* v1 = ALOField_Find2(a1->Data1, 162);
 	if (!v1)
 	{
-		return 0;
+		return retval;
 	}
 	AL_SetBehaviorWithTimer(a1, sub_5647B0, 500);
 	return 1;

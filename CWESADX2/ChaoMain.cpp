@@ -16,6 +16,8 @@ NJS_TEXLIST timeofdayTexlistReplacer = { timeofdayTexnames, 100 };
 NJS_TEXNAME osamenu_tex[9];
 NJS_TEXLIST AL_OSAMENU = { osamenu_tex, 9 };
 
+bool UseBrightChao = false;
+
 bool DayNightCheat = true;
 
 int SeasonIndicator = 1;
