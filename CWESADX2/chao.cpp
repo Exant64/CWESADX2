@@ -12,6 +12,7 @@
 #include "alo_accessory.h"
 #include "ChaoMain.h"
 
+
 FunctionPointer(void, SetChunkColor, (int a1), 0x0078A320);
 FunctionPointer(void, ApplyWSwitch, (int a1), 0x00717470);
 
@@ -273,6 +274,7 @@ void ThinkControllerHook(ObjectMaster* a1, float* a2)
 		AL_SetBehavior(a1, FartReaction);
 		*a2 = 1;
 	}
+	
 	//if(sub_563B70(a1)) *a2 = 1;
 	//AL_CalcIntention_Illness(a1, a2);
 	AL_CalcIntentionScore_Fear(a1, a2);
@@ -476,7 +478,7 @@ void __cdecl chSetRareMaterial_(int texture, int color, int shiny, int highlight
 	flag = 0;
 	if (model)
 	{
-		if (shiny && !highlights)
+		if (shiny && ((!highlights) || (highlights && texture)))
 		{
 			flag = 2;
 			flag |= DontUseTexture;
@@ -484,7 +486,10 @@ void __cdecl chSetRareMaterial_(int texture, int color, int shiny, int highlight
 			if (color > 0 && !texture)
 			{
 				flag |= UseChunkObjectColor;
-				SetChunkColor(((int*)0x0389D828)[color - 1]);
+				if(UseMixedColors)
+					SetChunkColor(((int*)patchedColors)[color]); 
+				else
+					SetChunkColor(((int*)0x0389D828)[color - 1]);
 			}
 			else
 				SetChunkColor(-1);
@@ -513,7 +518,10 @@ void __cdecl chSetRareMaterial_(int texture, int color, int shiny, int highlight
 					if (color > 0)
 					{
 						flag |= UseChunkObjectColor;
-						SetChunkColor(((int*)0x0389D828)[color - 1]);
+						if (UseMixedColors)
+							SetChunkColor(((int*)patchedColors)[color]);
+						else
+							SetChunkColor(((int*)0x0389D828)[color - 1]);
 					}
 					if (highlights)
 					{

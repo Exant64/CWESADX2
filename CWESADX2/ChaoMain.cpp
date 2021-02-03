@@ -1,9 +1,11 @@
 #include "SADXModLoader.h"
-//#include "ChaoMain.h"
+#include "ChaoMain.h"
 //#include "CWE.h"
 //#include "al_minimal.h"
 //#include "ninja_functions.h"
+#include "patchedcolors.h"
 #include "AL_ModAPI.h"
+#include "chao.h"
 NJS_TEXNAME AL_SANDHOLE_TEXNAME[2];
 NJS_TEXLIST AL_SANDHOLE_TEXLIST = { arrayptrandlength(AL_SANDHOLE_TEXNAME) };
 
@@ -17,7 +19,7 @@ NJS_TEXNAME osamenu_tex[9];
 NJS_TEXLIST AL_OSAMENU = { osamenu_tex, 9 };
 
 bool UseBrightChao = false;
-
+bool UseMixedColors = false;
 bool DayNightCheat = true;
 
 int SeasonIndicator = 1;
@@ -236,97 +238,79 @@ void sub_46E5E0(int a1, int a2)
 	}
 }
 
-void sub_52F2A0()
+*/
+FunctionPointer(void, StopHoldingTaskP, (unsigned __int8 a1), 0x004420C0);
+FunctionPointer(int, AL_GetHoldingItemCategory, (), 0x007174D0);
+FunctionPointer(int, sub_7174E0, (), 0x007174E0);
+FunctionPointer(ObjectMaster*, Animal_Load, (char a1, NJS_VECTOR* a2, int a3, NJS_VECTOR* a4, int a5), 0x00722200);
+FunctionPointer(ObjectMaster*, GardenFruit_Create, (int a1, NJS_VECTOR* position, Angle angle, NJS_VECTOR* a4, ITEM_SAVE_INFO* a5), 0x00722DE0);
+FunctionPointer(ObjectMaster*, ALO_ObakeHeadCreate, (char a1, NJS_VECTOR* a2, int a3, NJS_VECTOR* a4, int a5), 0x007236F0);
+void __cdecl LoadHeldItem_()
 {
-	int v0; // ebp
-	ChaoObjectData* v1; // esi
-	EntityData1* v2; // edi
-	int v3; // ebx
-	Float v4; // edx
-	Float v5; // eax
-	ObjectMaster* v6; // esi
-	ChaoObjectData* v7; // [esp+8h] [ebp-1Ch]
-	NJS_VECTOR a2; // [esp+Ch] [ebp-18h]
+	int v0; // edi
+	int v1; // eax
+	ITEM_SAVE_INFO* v2; // ebx
+	Angle v3; // esi
+	ObjectMaster* v4; // esi
+	int v5; // eax
+	ObjectMaster* v6; // [esp+8h] [ebp-1Ch]
+	NJS_VECTOR position; // [esp+Ch] [ebp-18h]
 	NJS_VECTOR a4; // [esp+18h] [ebp-Ch]
 
+	v0 = AL_GetHoldingItemCategory();
+	v1 = sub_7174E0();
+	v2 = (ITEM_SAVE_INFO*)v1;
+	position.x = 0.0;
+	position.y = 0.0;
+	position.z = 0.0;
 	a4.x = 0.0;
-	v0 = HeldItemType;
 	a4.y = 0.0;
 	a4.z = 0.0;
-	v1 = dword_19F6454;
-	v7 = dword_19F6454;
-	switch (HeldItemType)
+	if (v1 && sub_7174E0() >= 0)
 	{
-	case 2:
-	case 3:
-	case 7:
-	case 8:
-	case 9:
-		if (dword_19F6454 && dword_19F6454->Type >= 0)
+		v3 = EntityData1Ptrs[0]->Rotation.y;
+		position.x = EntityData1Ptrs[0]->Position.x;
+		position.y = EntityData1Ptrs[0]->Position.y;
+		position.z = EntityData1Ptrs[0]->Position.z;
+		position.x = njSin(v3) * 3.0 + position.x;
+		position.z = njCos(v3) * 3.0 + position.z;
+		StopHoldingTaskP(0);
+		GetCharObj2(0)->ObjectHeld = 0;
+		switch (v0)
 		{
-			v2 = MainCharObj1[0];
-			v3 = MainCharObj1[0]->Rotation.y;
-			v4 = MainCharObj1[0]->Position.y;
-			v5 = MainCharObj1[0]->Position.z;
-			a2.x = MainCharObj1[0]->Position.x;
-			a2.y = v4;
-			a2.z = v5;
-			a2.x = njSin(v3) * 3.0f + a2.x;
-			a2.z = njCos(v3) * 3.0f + a2.z;
-			if (v2)
+		case 2:
+			if (v2->Type >= 0 && v2->Type < 15)
 			{
-				sub_46E5E0(0, (int)v2);
+				v4 = Animal_Load(v2->Type, &position, EntityData1Ptrs[0]->Rotation.y, &a4, (int)v2);
+				goto LABEL_15;
 			}
-			MainCharObj2[0]->HeldObject = 0;
-			switch (v0)
+			break;
+		case 3:
+			v4 = GardenFruit_Create(v2->Type, &position, EntityData1Ptrs[0]->Rotation.y, &a4, v2);
+			goto LABEL_15;
+		case 8:
+			v4 = Accessory_Load(v2->Type, &position, EntityData1Ptrs[0]->Rotation.y, &a4, (short*)v2);
+			goto LABEL_15;
+		case 9:
+			v4 = Accessory_Load(v2->Type, &position, EntityData1Ptrs[0]->Rotation.y, &a4, (short*)v2);
+		LABEL_15:
+			v5 = CurrentChaoStage;
+			if (v5 >= 4 && v5 <= 6)
 			{
-			case 2:
-				if (v1->Type >= 21 && v1->Type < 25)
-				{
-					v6 = ALO_ChaosDriveExecutor_Load(LOBYTE(v1->Type) - 21, &a2, &a4, (ChaoData*)v1);
-				}
-				else
-				{
-					v6 = AL_MinimalExecutor_Load(v1->Type, &a2, MainCharObj1[0]->Rotation.y, &a4, (int)v1);
-				}
-				goto LABEL_14;
-			case 3:
-				v6 = ALO_FruitExecutor_Load(v1->Type, &a2, MainCharObj1[0]->Rotation.y, &a4, (ChaoData*)v1);
-				goto LABEL_14;
-			case 4:
-			case 5:
-			case 6:
-				v6 = (ObjectMaster*)v7;
-				goto LABEL_14;
-			case 7:
-				v6 = ALO_SeedExecutor_Load(v1->Type, &a2, &a4, (int)v1);
-				goto LABEL_14;
-			case 8:
-				v6 = Accessory_Load(v1->Type, &a2, MainCharObj1[0]->Rotation.y, &a4, (short*)v1);
-				goto LABEL_14;
-			case 9:
-				v6 = Accessory_Load(v1->Type, &a2, MainCharObj1[0]->Rotation.y, &a4, (short*)v1);
-			LABEL_14:
-				if (CurrentChaoArea > 0 && CurrentChaoArea <= 3)
-				{
-					v7->Garden = CurrentChaoArea;
-				}
-				sub_46E5B0(v6, 0);
-				break;
-			default:
-				return;
+				v2->Garden = CurrentChaoStage;
 			}
+			SetHeldObject(0, v4);
+			return;
 		}
-		break;
-	default:
-		return;
+		v4 = nullptr;
+		goto LABEL_15;
 	}
 }
-*/
 void ChaoMain_Init()
 {
 	//WriteCall((void*)0x0052B2DA, ChaoMain_subprgmanager_Hook);
 	WriteCall((void*)0x00715445, ChaoMain_Constructor_Hook);
 	//WriteJump((void*)0x52E920, sub_52E920);
+	WriteJump(LoadHeldItem, LoadHeldItem_);
 	//WriteJump((void*)0x52F2A0, sub_52F2A0);
 }

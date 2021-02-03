@@ -14,6 +14,8 @@ extern int SeasonIndicator;
 extern int TimeOfDay;
 extern int Weather;
 extern bool UseBrightChao;
+extern bool UseMixedColors;
+extern unsigned char patchedColors[];
 
 extern NJS_TEXLIST AL_SANDHOLE_TEXLIST;
 extern NJS_TEXLIST CWE_OBJECT_TEXLIST;

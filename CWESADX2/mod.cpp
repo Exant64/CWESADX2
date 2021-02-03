@@ -6,7 +6,7 @@
 #include "al_toy/alo_toy.h"
 #include "chao.h"
 #include "al_sound.h"
-#include "patchedcolors.h"
+//#include "patchedcolors.h"
 #include "data/mixColorTable.h"
 #include "ChaoMain.h"
 
@@ -633,7 +633,7 @@ extern "C"
 		a1->DeleteSub = (ObjectFuncPtr)nullsub;
 		
 	}
-	
+
 	//Vector3, Vector3, float, float, int
 	DataArray(MotionTableAction, ChaoAnimations, 0x36A94E8, 625);
 	__declspec(dllexport) void Init(const char *path, const HelperFunctions* function)
@@ -699,6 +699,7 @@ extern "C"
 
 		if (config->getBool("Chao World Extended", "ColorMixing", true))
 		{
+			UseMixedColors = true;
 			//different color formats
 			for (int i = 0; i < 1024; i += 4)
 			{
